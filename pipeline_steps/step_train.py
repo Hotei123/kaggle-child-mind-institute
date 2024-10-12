@@ -7,7 +7,6 @@ from pipeline_steps.step_prepare_data import StepPrepareData
 def train():
     path_train: str = 'output/train_processed.csv'
     path_test_raw: str = 'data/child-mind-institute-problematic-internet-use/test.csv'
-    path_test: str = 'output/test_processed.csv'
 
     data_train_xy = pd.read_csv(path_train)
     data_train_x = data_train_xy.drop(columns=['sii'])
