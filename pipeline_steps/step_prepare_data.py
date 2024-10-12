@@ -22,19 +22,21 @@ class StepPrepareData:
     path_tabular_train: str = 'data/child-mind-institute-problematic-internet-use/train.csv'
     path_tabular_test: str = 'data/child-mind-institute-problematic-internet-use/test.csv'
 
-    def export_single_partition(self, path: str, is_train: bool):
+    def get_partition_prepared(self, path: str, is_train: bool) -> pd.DataFrame:
         data: pd.DataFrame = pd.read_csv(path)
         if is_train:
             data.sii.fillna(0, inplace=True)
         data.drop(columns=['id'], inplace=True)
         cols_select = self.cols_num + [self.col_target] if is_train else self.cols_num
         data = data[cols_select]
-        partition_name = 'train' if is_train else 'test'
-        data.to_csv(f'output/{partition_name}_processed.csv', index=False)
+        return data
 
     def export_partitions(self):
-        for path, is_train in zip([self.path_tabular_train, self.path_tabular_test], [True, False]):
-            self.export_single_partition(path, is_train)
+        for path, is_train, partition_name in zip([self.path_tabular_train, self.path_tabular_test], 
+                                                  [True, False],
+                                                  ['train', 'test']):
+            data = self.get_partition_prepared(path, is_train)
+            data.to_csv(f'output/{partition_name}_processed.csv', index=False)
 
 
 if __name__ == '__main__':
