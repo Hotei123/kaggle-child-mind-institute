@@ -3,7 +3,7 @@ import pandas as pd
 
 
 class StepPrepareData:
-    cols_num: List[str] = ['CGAS-CGAS_Score', 'Physical-BMI', 'Physical-Height', 'Physical-Weight', 
+    vars_num: List[str] = ['CGAS-CGAS_Score', 'Physical-BMI', 'Physical-Height', 'Physical-Weight', 
                         'Physical-Waist_Circumference', 'Physical-Diastolic_BP', 'Physical-HeartRate', 
                         'Physical-Systolic_BP', 'Fitness_Endurance-Max_Stage', 'Fitness_Endurance-Time_Mins', 
                         'Fitness_Endurance-Time_Sec', 'FGC-FGC_CU', 'FGC-FGC_CU_Zone', 'FGC-FGC_GSND', 
@@ -16,8 +16,8 @@ class StepPrepareData:
                         'PAQ_A-PAQ_A_Total', 'PAQ_C-PAQ_C_Total', 'SDS-SDS_Total_Raw', 
                         'SDS-SDS_Total_T', 'PreInt_EduHx-computerinternet_hoursday']
 
-    cols_cat: List[str] = []
-    col_target: str = 'sii'
+    vars_cat: List[str] = []
+    var_target: str = 'sii'
     # path_tabular_train: str = '/kaggle/input/child-mind-institute-problematic-internet-use/train.csv'
     path_tabular_train: str = 'data/child-mind-institute-problematic-internet-use/train.csv'
     path_tabular_test: str = 'data/child-mind-institute-problematic-internet-use/test.csv'
@@ -27,7 +27,7 @@ class StepPrepareData:
         if is_train:
             data.sii.fillna(0, inplace=True)
         data.drop(columns=['id'], inplace=True)
-        cols_select = self.cols_num + [self.col_target] if is_train else self.cols_num
+        cols_select = self.vars_num + [self.var_target] if is_train else self.vars_num
         data = data[cols_select]
         return data
 
