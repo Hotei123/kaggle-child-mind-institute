@@ -1,3 +1,4 @@
+from typing import List
 import numpy as np
 import pandas as pd
 from sklearn.metrics import confusion_matrix
@@ -9,14 +10,14 @@ from pipeline_steps.step_prepare_data import StepPrepareData
 class StepTrain:
 
     step_prepare_data = StepPrepareData()
-    var_target = 'sii'
 
-    def quadratic_kappa(self, actuals, preds, N=4):
+    @staticmethod
+    def quadratic_kappa(actuals, preds, N=4):
         """This function calculates the Quadratic Kappa Metric used for Evaluation in the PetFinder competition
         at Kaggle. It returns the Quadratic Weighted Kappa metric score between the actual and the predicted values 
         of adoption rating."""
         w = np.zeros((N,N))
-        O = confusion_matrix(actuals, preds)
+        O = confusion_matrix(actuals, preds, labels=range(N))
         for i in range(len(w)): 
             for j in range(len(w)):
                 w[i][j] = float(((i-j)**2)/(N-1)**2)
@@ -43,21 +44,40 @@ class StepTrain:
 
     def train(self):
         path_train: str = 'output/train_processed.csv'
-        path_test_raw: str = 'data/child-mind-institute-problematic-internet-use/test.csv'
 
         data_train_xy = pd.read_csv(path_train)
         data_train_x = data_train_xy.drop(columns=[self.step_prepare_data.var_target])
         data_train_y = data_train_xy[self.step_prepare_data.var_target]
 
-        data_test_raw = pd.read_csv(path_test_raw)
-        data_test_x = self.step_prepare_data.get_partition_prepared(path_test_raw, False)
+        data_test_raw = pd.read_csv(self.step_prepare_data.path_tabular_test)
+        data_test_x = self.step_prepare_data.get_partition_prepared(self.step_prepare_data.path_tabular_test, 
+                                                                    False)
 
         xgb_class = xgb.XGBClassifier()
+
+        n_folds: int = 10
+        fold_size: int = int(data_train_x.shape[0] / n_folds)
+        metrics: List[float] = []
+        for fold in range(n_folds):
+            print(f'Fold {fold}.')
+            data_train_x_fold = pd.concat([data_train_x.iloc[:fold_size * (fold + 1), :], 
+                                           data_train_x.iloc[fold_size * (fold + 2):, :]])
+            data_train_y_fold = pd.concat([data_train_y.iloc[:fold_size * (fold + 1)], 
+                                           data_train_y.iloc[fold_size * (fold + 2):]])
+            data_test_x_fold = data_train_x.iloc[fold_size * (fold + 1): fold_size * (fold + 2), :]
+            data_test_y_fold = data_train_y.iloc[fold_size * (fold + 1): fold_size * (fold + 2)]
+            xgb_class.fit(data_train_x_fold, data_train_y_fold)
+            y_pred_fold = xgb_class.predict(data_test_x_fold)
+            metrics.append(self.quadratic_kappa(data_test_y_fold, y_pred_fold))
+
+        print(f'CV metrics: {[np.round(m, 3) for m in metrics]}.\nMean metric: {np.mean(metrics): .3f}.')
+
+        # Training in whole training data
         xgb_class.fit(data_train_x, data_train_y)
         y_pred_train = xgb_class.predict(data_train_x)
         y_pred_test = xgb_class.predict(data_test_x)
 
-        print(self.quadratic_kappa(data_train_y.values, y_pred_train))
+        print(f'Metric in full training data: {self.quadratic_kappa(data_train_y.values, y_pred_train): .3f}.')
 
         submission = pd.DataFrame({'id': data_test_raw['id'], self.step_prepare_data.var_target: y_pred_test})
         submission.to_csv('output/submission.csv', index=False)
