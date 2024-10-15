@@ -31,8 +31,12 @@ class StepTrain:
             pred_hist[int(item)]+=1
                             
         E = np.outer(act_hist, pred_hist)
-        E = E/E.sum()
-        O = O/O.sum()
+        e_sum = E.sum()
+        if e_sum > 0:
+            E = E/e_sum
+        o_sum = O.sum()
+        if o_sum > 0:
+            O = O/o_sum
         
         num=0
         den=0
@@ -40,7 +44,10 @@ class StepTrain:
             for j in range(len(w)):
                 num+=w[i][j]*O[i][j]
                 den+=w[i][j]*E[i][j]
-        return (1 - (num/den))
+        if den > 0:
+            return (1 - (num/den))
+        else:
+            return 0
 
     def train(self):
         path_train: str = 'output/train_processed.csv'
@@ -58,14 +65,15 @@ class StepTrain:
         n_folds: int = 10
         fold_size: int = int(data_train_x.shape[0] / n_folds)
         metrics: List[float] = []
+        print(f'Data shape: {data_train_x.shape}')
         for fold in range(n_folds):
             print(f'Fold {fold}.')
-            data_train_x_fold = pd.concat([data_train_x.iloc[:fold_size * (fold + 1), :], 
-                                           data_train_x.iloc[fold_size * (fold + 2):, :]])
-            data_train_y_fold = pd.concat([data_train_y.iloc[:fold_size * (fold + 1)], 
-                                           data_train_y.iloc[fold_size * (fold + 2):]])
-            data_test_x_fold = data_train_x.iloc[fold_size * (fold + 1): fold_size * (fold + 2), :]
-            data_test_y_fold = data_train_y.iloc[fold_size * (fold + 1): fold_size * (fold + 2)]
+            data_train_x_fold = pd.concat([data_train_x.iloc[:fold_size * fold, :], 
+                                           data_train_x.iloc[fold_size * (fold + 1):, :]])
+            data_train_y_fold = pd.concat([data_train_y.iloc[:fold_size * fold], 
+                                           data_train_y.iloc[fold_size * (fold + 1):]])
+            data_test_x_fold = data_train_x.iloc[fold_size * fold: fold_size * (fold + 1), :]
+            data_test_y_fold = data_train_y.iloc[fold_size * fold: fold_size * (fold + 1)]
             xgb_class.fit(data_train_x_fold, data_train_y_fold)
             y_pred_fold = xgb_class.predict(data_test_x_fold)
             metrics.append(self.quadratic_kappa(data_test_y_fold, y_pred_fold))
