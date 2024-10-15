@@ -15,8 +15,9 @@ class StepPrepareData:
                            'BIA-BIA_ICW', 'BIA-BIA_LDM', 'BIA-BIA_LST', 'BIA-BIA_SMM', 'BIA-BIA_TBW', 
                            'PAQ_A-PAQ_A_Total', 'PAQ_C-PAQ_C_Total', 'SDS-SDS_Total_Raw', 
                            'SDS-SDS_Total_T', 'PreInt_EduHx-computerinternet_hoursday']
-
-    vars_cat: List[str] = []
+    vars_cat: List[str] = ['Basic_Demos-Enroll_Season', 'CGAS-Season', 'Physical-Season', 
+                           'Fitness_Endurance-Season', 'FGC-Season', 'BIA-Season', 'PAQ_A-Season', 
+                           'PAQ_C-Season', 'PCIAT-Season', 'SDS-Season', 'PreInt_EduHx-Season']
     var_target: str = 'sii'
     # path_tabular_train: str = '/kaggle/input/child-mind-institute-problematic-internet-use/train.csv'
     path_tabular_train: str = 'data/child-mind-institute-problematic-internet-use/train.csv'
@@ -40,6 +41,6 @@ class StepPrepareData:
 
 
 if __name__ == '__main__':
-
+    # TODO: check if all variables, numerical or categorical, are included.
     step_prepare_data = StepPrepareData()
     step_prepare_data.export_partitions()
