@@ -3,7 +3,7 @@ import pandas as pd
 
 
 class StepPrepareData:
-    vars_num: List[str] = ['CGAS-CGAS_Score', 'Physical-BMI', 'Physical-Height', 'Physical-Weight', 
+    vars_num: List[str] = ['Basic_Demos-Age', 'Basic_Demos-Sex', 'CGAS-CGAS_Score', 'Physical-BMI', 'Physical-Height', 'Physical-Weight', 
                            'Physical-Waist_Circumference', 'Physical-Diastolic_BP', 'Physical-HeartRate', 
                            'Physical-Systolic_BP', 'Fitness_Endurance-Max_Stage', 'Fitness_Endurance-Time_Mins', 
                            'Fitness_Endurance-Time_Sec', 'FGC-FGC_CU', 'FGC-FGC_CU_Zone', 'FGC-FGC_GSND', 
