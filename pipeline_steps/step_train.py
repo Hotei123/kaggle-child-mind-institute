@@ -59,6 +59,10 @@ class StepTrain:
         data_test_raw = pd.read_csv(self.step_prepare_data.path_tabular_test)
         data_test_x = self.step_prepare_data.get_partition_prepared(self.step_prepare_data.path_tabular_test, 
                                                                     False)
+        for col in data_train_x.columns:
+            if col not in data_test_x.columns:
+                data_test_x[col] = 0
+        data_test_x = data_test_x[data_train_x.columns]
 
         xgb_class = xgb.XGBClassifier()
 
