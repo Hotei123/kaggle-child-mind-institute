@@ -21,14 +21,17 @@ class StepPrepareData:
                                     'PAQ_C-Season', 'SDS-Season', 'PreInt_EduHx-Season']
         self.vars_cat_dummy: List[str] = None
         self.var_target: str = 'sii'
-        # path_tabular_train: str = '/kaggle/input/child-mind-institute-problematic-internet-use/train.csv'
+        # self.path_tabular_train: str = '/kaggle/input/child-mind-institute-problematic-internet-use/train.csv'
         self.path_tabular_train: str = 'data/child-mind-institute-problematic-internet-use/train.csv'
         self.path_tabular_test: str = 'data/child-mind-institute-problematic-internet-use/test.csv'
 
-    def get_partition_prepared(self, path: str, is_train: bool) -> pd.DataFrame:
+    def get_partition_prepared(self, path: str, is_train: bool, use_target_nan: bool) -> pd.DataFrame:
         data: pd.DataFrame = pd.read_csv(path)
         if is_train:
-            data.sii.fillna(0, inplace=True)
+            if use_target_nan:
+                data[self.var_target].fillna(0, inplace=True)
+            else:
+                data = data[data[self.var_target].notna()]
         data.drop(columns=['id'], inplace=True)
         data_dummy: pd.DataFrame = pd.get_dummies(data[self.vars_cat])
         cols_select = self.vars_num + [self.var_target] if is_train else self.vars_num
@@ -37,15 +40,17 @@ class StepPrepareData:
             self.vars_cat_dummy = data_dummy.columns.tolist()
         return data
 
-    def export_partitions(self):
+    def export_partitions(self, use_target_nan: bool = False):
         for path, is_train, partition_name in zip([self.path_tabular_train, self.path_tabular_test], 
                                                   [True, False],
                                                   ['train', 'test']):
-            data = self.get_partition_prepared(path, is_train)
+            data = self.get_partition_prepared(path, is_train, use_target_nan)
             data.to_csv(f'output/{partition_name}_processed.csv', index=False)
 
 
 if __name__ == '__main__':
     # TODO: check if all variables, numerical or categorical, are included.
+    # TODO: Fill Nans in training sii with predictions of algorithm trained in available sii.
+    # TODO: Use time series data
     step_prepare_data = StepPrepareData()
     step_prepare_data.export_partitions()
