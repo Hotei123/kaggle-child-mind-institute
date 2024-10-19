@@ -1,4 +1,4 @@
-from typing import List
+from typing import Any, List, Union
 import pandas as pd
 
 
@@ -25,22 +25,27 @@ class StepPrepareData:
         self.path_tabular_train: str = 'data/child-mind-institute-problematic-internet-use/train.csv'
         self.path_tabular_test: str = 'data/child-mind-institute-problematic-internet-use/test.csv'
 
-    def get_partition_prepared(self, path: str, is_train: bool, use_target_nan: bool) -> pd.DataFrame:
+    def get_partition_prepared(self, path: str, is_train: bool, 
+                               use_target_nan: bool) -> pd.DataFrame:
         data: pd.DataFrame = pd.read_csv(path)
         if is_train:
+            data['is_labeled'] = data['sii'].notna()
             if use_target_nan:
                 data[self.var_target].fillna(0, inplace=True)
             else:
-                data = data[data[self.var_target].notna()]
+                data = data[data['is_labeled']]
+        else:
+            data['is_labeled'] = False
         data.drop(columns=['id'], inplace=True)
         data_dummy: pd.DataFrame = pd.get_dummies(data[self.vars_cat])
         cols_select = self.vars_num + [self.var_target] if is_train else self.vars_num
         data = pd.concat([data[cols_select], data_dummy], axis=1)
         if self.vars_cat_dummy is None:
             self.vars_cat_dummy = data_dummy.columns.tolist()
+            self.vars_cat_dummy.append('is_labeled')
         return data
 
-    def export_partitions(self, use_target_nan: bool = False):
+    def export_partitions(self, use_target_nan: bool = True):
         for path, is_train, partition_name in zip([self.path_tabular_train, self.path_tabular_test], 
                                                   [True, False],
                                                   ['train', 'test']):
