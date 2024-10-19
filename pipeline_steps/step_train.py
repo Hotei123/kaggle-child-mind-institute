@@ -1,4 +1,4 @@
-from typing import List
+from typing import Any, Dict, List
 import numpy as np
 import pandas as pd
 from sklearn.metrics import confusion_matrix
@@ -9,7 +9,9 @@ from pipeline_steps.step_prepare_data import StepPrepareData
 
 class StepTrain:
 
-    step_prepare_data = StepPrepareData()
+    def __init__(self, config: Dict[str, Any]) -> None:
+        self.config: Dict[str, Any] = config
+        self.step_prepare_data = StepPrepareData(config)
 
     @staticmethod
     def quadratic_kappa(actuals, preds, N=4):
