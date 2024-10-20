@@ -25,7 +25,8 @@ class StepPrepareData:
         data.drop(columns=['id'], inplace=True)
         data_dummy: pd.DataFrame = pd.get_dummies(data[self.vars_cat])
         cols_select = self.vars_num + [self.var_target] if is_train else self.vars_num
-        cols_select.append('is_labeled')
+        if 'is_labeled' not in cols_select:
+            cols_select.append('is_labeled')
         data = pd.concat([data[cols_select], data_dummy], axis=1)
         if self.vars_cat_dummy is None:
             self.vars_cat_dummy = data_dummy.columns.tolist()
