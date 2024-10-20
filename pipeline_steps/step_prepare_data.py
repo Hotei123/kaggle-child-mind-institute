@@ -1,3 +1,4 @@
+import os
 from typing import Any, Dict, List, Union
 import pandas as pd
 
@@ -10,6 +11,7 @@ class StepPrepareData:
         self.var_target: str = config['prepare_data']['var_target']
         self.path_tabular_train: str = config['prepare_data']['path_tabular_train']
         self.path_tabular_test: str = config['prepare_data']['path_tabular_test']
+        self.path_output: str = config['prepare_data']['path_output']
 
     def get_partition_prepared(self, path: str, is_train: bool, 
                                use_target_nan: bool) -> pd.DataFrame:
@@ -38,7 +40,7 @@ class StepPrepareData:
                                                   [True, False],
                                                   ['train', 'test']):
             data = self.get_partition_prepared(path, is_train, use_target_nan)
-            data.to_csv(f'output/{partition_name}_processed.csv', index=False)
+            data.to_csv(os.path.join(self.path_output,  f'{partition_name}_processed.csv'), index=False)
 
 
 if __name__ == '__main__':

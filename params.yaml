@@ -1,6 +1,7 @@
 prepare_data:
   path_tabular_train: data/child-mind-institute-problematic-internet-use/train.csv
   path_tabular_test: data/child-mind-institute-problematic-internet-use/test.csv
+  path_output: 'output/'
   # Kaggle paths:
   # - path_train_raw: /kaggle/input/child-mind-institute-problematic-internet-use/train.csv
   # - path_test_raw: /kaggle/input/child-mind-institute-problematic-internet-use/test.csv

@@ -1,3 +1,4 @@
+import os
 from typing import Any, Dict, List
 import numpy as np
 import pandas as pd
@@ -52,9 +53,10 @@ class StepTrain:
             return 0
 
     def train(self):
-        path_train: str = 'output/train_processed.csv'
+        path_output: str = self.config['prepare_data']['path_output']
+        path_train_processed: str = os.path.join(path_output, 'train_processed.csv')
 
-        data_train_xy = pd.read_csv(path_train)
+        data_train_xy = pd.read_csv(path_train_processed)
         data_train_x = data_train_xy.drop(columns=[self.step_prepare_data.var_target])
         data_train_y = data_train_xy[self.step_prepare_data.var_target]
 
@@ -94,4 +96,4 @@ class StepTrain:
         print(f'Metric in full training data: {self.quadratic_kappa(data_train_y.values, y_pred_train): .3f}.')
 
         submission = pd.DataFrame({'id': data_test_raw['id'], self.step_prepare_data.var_target: y_pred_test})
-        submission.to_csv('output/submission.csv', index=False)
+        submission.to_csv(os.path.join(path_output, 'submission.csv'), index=False)
