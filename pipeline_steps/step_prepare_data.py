@@ -16,23 +16,14 @@ class StepPrepareData:
     def get_partition_prepared(self, path: str, is_train: bool, 
                                use_target_nan: bool) -> pd.DataFrame:
         data: pd.DataFrame = pd.read_csv(path)
-        if is_train:
-            data['is_labeled'] = data[self.var_target].notna()
-            if use_target_nan:
-                data[self.var_target].fillna(0, inplace=True)
-            else:
-                data = data[data['is_labeled']]
-        else:
-            data['is_labeled'] = False
+        if is_train and use_target_nan:
+            data[self.var_target].fillna(0, inplace=True)
         data.drop(columns=['id'], inplace=True)
         data_dummy: pd.DataFrame = pd.get_dummies(data[self.vars_cat])
         cols_select = self.vars_num + [self.var_target] if is_train else self.vars_num
-        if 'is_labeled' not in cols_select:
-            cols_select.append('is_labeled')
         data = pd.concat([data[cols_select], data_dummy], axis=1)
         if self.vars_cat_dummy is None:
             self.vars_cat_dummy = data_dummy.columns.tolist()
-            self.vars_cat_dummy.append('is_labeled')
         return data
 
     def export_partitions(self, use_target_nan: bool = True):
