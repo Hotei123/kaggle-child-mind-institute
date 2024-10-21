@@ -70,6 +70,12 @@ class StepTrain:
 
         xgb_class = xgb.XGBClassifier()
 
+        data_train_x_labeled = data_train_x[data_train_y.notna()]
+        data_train_x_unlabeled = data_train_x[data_train_y.isna()]
+        xgb_class.fit(data_train_x_labeled, data_train_y[data_train_y.notna()])
+        labels_nan_filled = xgb_class.predict(data_train_x_unlabeled)
+        data_train_y.loc[data_train_y.isna()] = labels_nan_filled
+
         n_folds: int = 10
         fold_size: int = int(data_train_x.shape[0] / n_folds)
         metrics: List[float] = []

@@ -1,6 +1,7 @@
 import os
 from typing import Any, Dict, List, Union
 import pandas as pd
+import pathlib
 
 
 class StepPrepareData:
@@ -16,14 +17,24 @@ class StepPrepareData:
     def get_partition_prepared(self, path: str, is_train: bool, 
                                use_target_nan: bool) -> pd.DataFrame:
         data: pd.DataFrame = pd.read_csv(path)
-        if is_train and use_target_nan:
-            data[self.var_target].fillna(0, inplace=True)
+        # if is_train and use_target_nan:
+        #     data[self.var_target].fillna(0, inplace=True)
+        ids: List[str] = data['id'].tolist()
         data.drop(columns=['id'], inplace=True)
         data_dummy: pd.DataFrame = pd.get_dummies(data[self.vars_cat])
         cols_select = self.vars_num + [self.var_target] if is_train else self.vars_num
         data = pd.concat([data[cols_select], data_dummy], axis=1)
         if self.vars_cat_dummy is None:
             self.vars_cat_dummy = data_dummy.columns.tolist()
+
+        # path_series = pathlib.Path(path).parent
+        # if is_train:
+        #     path_series = path_series.joinpath('series_train.parquet')
+        # else:
+        #     path_series = path_series.joinpath('series_test.parquet')
+        # for id_child in ids:
+        #     path_child = path_series.joinpath(f'id={id_child}')
+
         return data
 
     def export_partitions(self, use_target_nan: bool = True):
@@ -37,6 +48,6 @@ class StepPrepareData:
 if __name__ == '__main__':
     # TODO: check if all variables, numerical or categorical, are included.
     # TODO: Fill Nans in training sii with predictions of algorithm trained in available sii.
-    # TODO: Use time series data
+    # TODO: Use time series data (start with .describe())
     step_prepare_data = StepPrepareData()
     step_prepare_data.export_partitions()
