@@ -1,0 +1,166 @@
+prepare_data:
+  path_tabular_train: data/child-mind-institute-problematic-internet-use/train.csv
+  path_tabular_test: data/child-mind-institute-problematic-internet-use/test.csv
+  path_series_train: data/child-mind-institute-problematic-internet-use/series_train
+  path_series_test: data/child-mind-institute-problematic-internet-use/series_test
+  path_output: 'output/'
+  # Kaggle paths:
+  # - path_train_raw: /kaggle/input/child-mind-institute-problematic-internet-use/train.csv
+  # - path_test_raw: /kaggle/input/child-mind-institute-problematic-internet-use/test.csv
+  vars_num:
+    - Basic_Demos-Age
+    - Basic_Demos-Sex
+    - CGAS-CGAS_Score
+    - Physical-BMI
+    - Physical-Height
+    - Physical-Weight
+    - Physical-Waist_Circumference
+    - Physical-Diastolic_BP
+    - Physical-HeartRate
+    - Physical-Systolic_BP
+    - Fitness_Endurance-Max_Stage
+    - Fitness_Endurance-Time_Mins
+    - Fitness_Endurance-Time_Sec
+    - FGC-FGC_CU
+    - FGC-FGC_CU_Zone
+    - FGC-FGC_GSND
+    - FGC-FGC_GSND_Zone
+    - FGC-FGC_GSD
+    - FGC-FGC_GSD_Zone
+    - FGC-FGC_PU
+    - FGC-FGC_PU_Zone
+    - FGC-FGC_SRL
+    - FGC-FGC_SRL_Zone
+    - FGC-FGC_SRR
+    - FGC-FGC_SRR_Zone
+    - FGC-FGC_TL
+    - FGC-FGC_TL_Zone
+    - BIA-BIA_Activity_Level_num
+    - BIA-BIA_BMC
+    - BIA-BIA_BMI
+    - BIA-BIA_BMR
+    - BIA-BIA_DEE
+    - BIA-BIA_ECW
+    - BIA-BIA_FFM
+    - BIA-BIA_FFMI
+    - BIA-BIA_FMI
+    - BIA-BIA_Fat
+    - BIA-BIA_Frame_num
+    - BIA-BIA_ICW
+    - BIA-BIA_LDM
+    - BIA-BIA_LST
+    - BIA-BIA_SMM
+    - BIA-BIA_TBW
+    - PAQ_A-PAQ_A_Total
+    - PAQ_C-PAQ_C_Total
+    - SDS-SDS_Total_Raw
+    - SDS-SDS_Total_T
+    - PreInt_EduHx-computerinternet_hoursday
+    # - series_desc_0
+    # - series_desc_1
+    # - series_desc_2
+    # - series_desc_3
+    # - series_desc_4
+    # - series_desc_5
+    # - series_desc_6
+    # - series_desc_7
+    # - series_desc_8
+    # - series_desc_9
+    # - series_desc_10
+    # - series_desc_11
+    # - series_desc_12
+    # - series_desc_13
+    # - series_desc_14
+    # - series_desc_15
+    # - series_desc_16
+    # - series_desc_17
+    # - series_desc_18
+    # - series_desc_19
+    # - series_desc_20
+    # - series_desc_21
+    # - series_desc_22
+    # - series_desc_23
+    # - series_desc_24
+    # - series_desc_25
+    # - series_desc_26
+    # - series_desc_27
+    # - series_desc_28
+    # - series_desc_29
+    # - series_desc_30
+    # - series_desc_31
+    # - series_desc_32
+    # - series_desc_33
+    # - series_desc_34
+    # - series_desc_35
+    # - series_desc_36
+    # - series_desc_37
+    # - series_desc_38
+    # - series_desc_39
+    # - series_desc_40
+    # - series_desc_41
+    # - series_desc_42
+    # - series_desc_43
+    # - series_desc_44
+    # - series_desc_45
+    # - series_desc_46
+    # - series_desc_47
+    # - series_desc_48
+    # - series_desc_49
+    # - series_desc_50
+    # - series_desc_51
+    # - series_desc_52
+    # - series_desc_53
+    # - series_desc_54
+    # - series_desc_55
+    # - series_desc_56
+    # - series_desc_57
+    # - series_desc_58
+    # - series_desc_59
+    # - series_desc_60
+    # - series_desc_61
+    # - series_desc_62
+    # - series_desc_63
+    # - series_desc_64
+    # - series_desc_65
+    # - series_desc_66
+    # - series_desc_67
+    # - series_desc_68
+    # - series_desc_69
+    # - series_desc_70
+    # - series_desc_71
+    # - series_desc_72
+    # - series_desc_73
+    # - series_desc_74
+    # - series_desc_75
+    # - series_desc_76
+    # - series_desc_77
+    # - series_desc_78
+    # - series_desc_79
+    # - series_desc_80
+    # - series_desc_81
+    # - series_desc_82
+    # - series_desc_83
+    # - series_desc_84
+    # - series_desc_85
+    # - series_desc_86
+    # - series_desc_87
+    # - series_desc_88
+    # - series_desc_89
+    # - series_desc_90
+    # - series_desc_91
+    # - series_desc_92
+    # - series_desc_93
+    # - series_desc_94
+    # - series_desc_95
+  vars_cat:
+    - Basic_Demos-Enroll_Season
+    - CGAS-Season
+    - Physical-Season
+    - Fitness_Endurance-Season
+    - FGC-Season
+    - BIA-Season
+    - PAQ_A-Season
+    - PAQ_C-Season
+    - SDS-Season
+    - PreInt_EduHx-Season
+  var_target: sii

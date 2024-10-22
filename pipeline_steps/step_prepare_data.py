@@ -1,35 +1,49 @@
-from typing import List
+import os
+from typing import Any, Dict, List, Union
+import numpy as np
 import pandas as pd
+import pathlib
+from tqdm import tqdm
 
 
 class StepPrepareData:
-    vars_num: List[str] = ['Basic_Demos-Age', 'Basic_Demos-Sex', 'CGAS-CGAS_Score', 'Physical-BMI', 'Physical-Height', 'Physical-Weight', 
-                           'Physical-Waist_Circumference', 'Physical-Diastolic_BP', 'Physical-HeartRate', 
-                           'Physical-Systolic_BP', 'Fitness_Endurance-Max_Stage', 'Fitness_Endurance-Time_Mins', 
-                           'Fitness_Endurance-Time_Sec', 'FGC-FGC_CU', 'FGC-FGC_CU_Zone', 'FGC-FGC_GSND', 
-                           'FGC-FGC_GSND_Zone', 'FGC-FGC_GSD', 'FGC-FGC_GSD_Zone', 'FGC-FGC_PU', 
-                           'FGC-FGC_PU_Zone', 'FGC-FGC_SRL', 'FGC-FGC_SRL_Zone', 'FGC-FGC_SRR', 
-                           'FGC-FGC_SRR_Zone', 'FGC-FGC_TL', 'FGC-FGC_TL_Zone', 'BIA-BIA_Activity_Level_num', 
-                           'BIA-BIA_BMC', 'BIA-BIA_BMI', 'BIA-BIA_BMR', 'BIA-BIA_DEE', 'BIA-BIA_ECW', 
-                           'BIA-BIA_FFM', 'BIA-BIA_FFMI', 'BIA-BIA_FMI', 'BIA-BIA_Fat', 'BIA-BIA_Frame_num', 
-                           'BIA-BIA_ICW', 'BIA-BIA_LDM', 'BIA-BIA_LST', 'BIA-BIA_SMM', 'BIA-BIA_TBW', 
-                           'PAQ_A-PAQ_A_Total', 'PAQ_C-PAQ_C_Total', 'SDS-SDS_Total_Raw', 
-                           'SDS-SDS_Total_T', 'PreInt_EduHx-computerinternet_hoursday']
-    vars_cat: List[str] = ['Basic_Demos-Enroll_Season', 'CGAS-Season', 'Physical-Season', 
-                           'Fitness_Endurance-Season', 'FGC-Season', 'BIA-Season', 'PAQ_A-Season', 
-                           'PAQ_C-Season', 'PCIAT-Season', 'SDS-Season', 'PreInt_EduHx-Season']
-    var_target: str = 'sii'
-    # path_tabular_train: str = '/kaggle/input/child-mind-institute-problematic-internet-use/train.csv'
-    path_tabular_train: str = 'data/child-mind-institute-problematic-internet-use/train.csv'
-    path_tabular_test: str = 'data/child-mind-institute-problematic-internet-use/test.csv'
+    def __init__(self, config: Dict[str, Any]) -> None:
+        self.vars_num: List[str] = config['prepare_data']['vars_num']
+        self.vars_cat: List[str] = config['prepare_data']['vars_cat']
+        self.vars_cat_dummy: List[str] = None
+        self.var_target: str = config['prepare_data']['var_target']
+        self.path_tabular_train: str = config['prepare_data']['path_tabular_train']
+        self.path_tabular_test: str = config['prepare_data']['path_tabular_test']
+        self.path_output: str = config['prepare_data']['path_output']
 
     def get_partition_prepared(self, path: str, is_train: bool) -> pd.DataFrame:
         data: pd.DataFrame = pd.read_csv(path)
-        if is_train:
-            data.sii.fillna(0, inplace=True)
+        ids: List[str] = data['id'].tolist()
         data.drop(columns=['id'], inplace=True)
+        data_dummy: pd.DataFrame = pd.get_dummies(data[self.vars_cat])
         cols_select = self.vars_num + [self.var_target] if is_train else self.vars_num
-        data = data[cols_select]
+        data = pd.concat([data[cols_select], data_dummy], axis=1)
+        if self.vars_cat_dummy is None:
+            self.vars_cat_dummy = data_dummy.columns.tolist()
+
+        data_series = np.zeros((data.shape[0], 96))
+        path_series = pathlib.Path(path).parent
+        if is_train:
+            path_series = path_series.joinpath('series_train.parquet')
+        else:
+            path_series = path_series.joinpath('series_test.parquet')
+        for row_count, id_row in tqdm(enumerate(ids), total=len(ids)):
+            path_child = path_series.joinpath(f'id={id_row}/part-0.parquet')
+            if path_child.exists():
+                data_series_row = pd.read_parquet(path_child)
+                data_series_row = data_series_row.describe()
+                data_series_row.drop(columns='step', inplace=True)
+                data_series_row = data_series_row.values.reshape((1, -1))
+                data_series[row_count, :] = data_series_row
+        vars_series = [f'series_desc_{i}' for i in range(data_series.shape[1])]
+        data_series = pd.DataFrame(data_series, columns=vars_series)
+        data = pd.concat([data, data_series], axis=1)
+
         return data
 
     def export_partitions(self):
@@ -37,10 +51,14 @@ class StepPrepareData:
                                                   [True, False],
                                                   ['train', 'test']):
             data = self.get_partition_prepared(path, is_train)
-            data.to_csv(f'output/{partition_name}_processed.csv', index=False)
+            data.to_csv(os.path.join(self.path_output,  f'{partition_name}_processed.csv'), index=False)
 
 
 if __name__ == '__main__':
     # TODO: check if all variables, numerical or categorical, are included.
+    # TODO: Fill Nans in training sii with predictions of algorithm trained in available sii.
+    # TODO: Use time series data (start with .describe())
+    # TODO: Check that there is not a series for each id.
+    # TODO: Check number of parquets per id.
     step_prepare_data = StepPrepareData()
     step_prepare_data.export_partitions()
