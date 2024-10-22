@@ -16,8 +16,7 @@ class StepPrepareData:
         self.path_tabular_test: str = config['prepare_data']['path_tabular_test']
         self.path_output: str = config['prepare_data']['path_output']
 
-    def get_partition_prepared(self, path: str, is_train: bool, 
-                               use_target_nan: bool) -> pd.DataFrame:
+    def get_partition_prepared(self, path: str, is_train: bool) -> pd.DataFrame:
         data: pd.DataFrame = pd.read_csv(path)
         ids: List[str] = data['id'].tolist()
         data.drop(columns=['id'], inplace=True)
@@ -41,14 +40,17 @@ class StepPrepareData:
                 data_series_row.drop(columns='step', inplace=True)
                 data_series_row = data_series_row.values.reshape((1, -1))
                 data_series[row_count, :] = data_series_row
+        vars_series = [f'series_desc_{i}' for i in range(data_series.shape[1])]
+        data_series = pd.DataFrame(data_series, columns=vars_series)
+        data = pd.concat([data, data_series], axis=1)
 
         return data
 
-    def export_partitions(self, use_target_nan: bool = True):
+    def export_partitions(self):
         for path, is_train, partition_name in zip([self.path_tabular_train, self.path_tabular_test], 
                                                   [True, False],
                                                   ['train', 'test']):
-            data = self.get_partition_prepared(path, is_train, use_target_nan)
+            data = self.get_partition_prepared(path, is_train)
             data.to_csv(os.path.join(self.path_output,  f'{partition_name}_processed.csv'), index=False)
 
 
