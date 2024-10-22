@@ -55,10 +55,5 @@ class StepPrepareData:
 
 
 if __name__ == '__main__':
-    # TODO: check if all variables, numerical or categorical, are included.
-    # TODO: Fill Nans in training sii with predictions of algorithm trained in available sii.
-    # TODO: Use time series data (start with .describe())
-    # TODO: Check that there is not a series for each id.
-    # TODO: Check number of parquets per id.
     step_prepare_data = StepPrepareData()
     step_prepare_data.export_partitions()
