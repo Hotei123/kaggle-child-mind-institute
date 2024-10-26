@@ -67,12 +67,12 @@ class StepTrain:
                 data_test_x[col] = 0
         data_test_x = data_test_x[data_train_x.columns]
 
-        xgb_class = xgb.XGBClassifier()
+        model = xgb.XGBClassifier()
 
         data_train_x_labeled = data_train_x[data_train_y.notna()]
         data_train_x_unlabeled = data_train_x[data_train_y.isna()]
-        xgb_class.fit(data_train_x_labeled, data_train_y[data_train_y.notna()])
-        labels_nan_filled = xgb_class.predict(data_train_x_unlabeled)
+        model.fit(data_train_x_labeled, data_train_y[data_train_y.notna()])
+        labels_nan_filled = model.predict(data_train_x_unlabeled)
         data_train_y.loc[data_train_y.isna()] = labels_nan_filled
 
         n_folds: int = 10
@@ -87,16 +87,16 @@ class StepTrain:
                                            data_train_y.iloc[fold_size * (fold + 1):]])
             data_test_x_fold = data_train_x.iloc[fold_size * fold: fold_size * (fold + 1), :]
             data_test_y_fold = data_train_y.iloc[fold_size * fold: fold_size * (fold + 1)]
-            xgb_class.fit(data_train_x_fold, data_train_y_fold)
-            y_pred_fold = xgb_class.predict(data_test_x_fold)
+            model.fit(data_train_x_fold, data_train_y_fold)
+            y_pred_fold = model.predict(data_test_x_fold)
             metrics.append(self.quadratic_kappa(data_test_y_fold, y_pred_fold))
 
         print(f'CV metrics: {[np.round(m, 3) for m in metrics]}.\nMean metric: {np.mean(metrics): .3f}.')
 
         # Training in whole training data
-        xgb_class.fit(data_train_x, data_train_y)
-        y_pred_train = xgb_class.predict(data_train_x)
-        y_pred_test = xgb_class.predict(data_test_x)
+        model.fit(data_train_x, data_train_y)
+        y_pred_train = model.predict(data_train_x)
+        y_pred_test = model.predict(data_test_x)
 
         print(f'Metric in full training data: {self.quadratic_kappa(data_train_y.values, y_pred_train): .3f}.')
 
