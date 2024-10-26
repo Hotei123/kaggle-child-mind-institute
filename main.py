@@ -13,3 +13,8 @@ if __name__ == '__main__':
 
     step_train = StepTrain(config)
     step_train.train()
+
+# TODO: Parallelize preprocessing
+# TODO: Use sklearn metric
+# TODO: Ensemble models
+# TODO: Organize Github
