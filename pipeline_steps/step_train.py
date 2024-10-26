@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import confusion_matrix
 import xgboost as xgb
-
+from sklearn.metrics import cohen_kappa_score
 from pipeline_steps.step_prepare_data import StepPrepareData
 
 
@@ -15,42 +15,8 @@ class StepTrain:
         self.step_prepare_data = StepPrepareData(config)
 
     @staticmethod
-    def quadratic_kappa(actuals, preds, N=4):
-        """This function calculates the Quadratic Kappa Metric used for Evaluation in the PetFinder competition
-        at Kaggle. It returns the Quadratic Weighted Kappa metric score between the actual and the predicted values 
-        of adoption rating."""
-        w = np.zeros((N,N))
-        O = confusion_matrix(actuals, preds, labels=range(N))
-        for i in range(len(w)): 
-            for j in range(len(w)):
-                w[i][j] = float(((i-j)**2)/(N-1)**2)
-        
-        act_hist=np.zeros([N])
-        for item in actuals: 
-            act_hist[int(item)]+=1
-        
-        pred_hist=np.zeros([N])
-        for item in preds: 
-            pred_hist[int(item)]+=1
-                            
-        E = np.outer(act_hist, pred_hist)
-        e_sum = E.sum()
-        if e_sum > 0:
-            E = E/e_sum
-        o_sum = O.sum()
-        if o_sum > 0:
-            O = O/o_sum
-        
-        num=0
-        den=0
-        for i in range(len(w)):
-            for j in range(len(w)):
-                num+=w[i][j]*O[i][j]
-                den+=w[i][j]*E[i][j]
-        if den > 0:
-            return (1 - (num/den))
-        else:
-            return 0
+    def kappa_scorer(y_true, y_pred):
+        return cohen_kappa_score(y_true, y_pred, weights='quadratic')
 
     def train(self):
         path_output: str = self.config['prepare_data']['path_output']
@@ -89,7 +55,7 @@ class StepTrain:
             data_test_y_fold = data_train_y.iloc[fold_size * fold: fold_size * (fold + 1)]
             model.fit(data_train_x_fold, data_train_y_fold)
             y_pred_fold = model.predict(data_test_x_fold)
-            metrics.append(self.quadratic_kappa(data_test_y_fold, y_pred_fold))
+            metrics.append(self.kappa_scorer(data_test_y_fold, y_pred_fold))
 
         print(f'CV metrics: {[np.round(m, 3) for m in metrics]}.\nMean metric: {np.mean(metrics): .3f}.')
 
@@ -98,7 +64,7 @@ class StepTrain:
         y_pred_train = model.predict(data_train_x)
         y_pred_test = model.predict(data_test_x)
 
-        print(f'Metric in full training data: {self.quadratic_kappa(data_train_y.values, y_pred_train): .3f}.')
+        print(f'Metric in full training data: {self.kappa_scorer(data_train_y.values, y_pred_train): .3f}.')
 
         submission = pd.DataFrame({'id': data_test_raw['id'], self.step_prepare_data.var_target: y_pred_test})
         submission.to_csv(os.path.join(path_output, 'submission.csv'), index=False)
