@@ -2,7 +2,7 @@ import tensorflow as tf
 import numpy as np
 import math
 
-shape_ts = (3, 5)
+shape_ts = (5, 7)
 shape_tab = (4,)
 
 # Generator function to yield data
@@ -24,8 +24,8 @@ def train_minimal():
     )
 
     input_ts = tf.keras.layers.Input(shape=shape_ts)
-    x = tf.keras.layers.Dense(32, activation="relu")(input_ts)
-    x = tf.keras.layers.Dense(16, activation="relu")(x)
+    x = tf.keras.layers.LSTM(32, return_sequences=True)(input_ts)
+    x = tf.keras.layers.LSTM(16)(x)
     x = tf.keras.layers.Flatten()(x)
 
     input_tab = tf.keras.layers.Input(shape=shape_tab)
