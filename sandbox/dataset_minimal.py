@@ -23,16 +23,9 @@ def train_minimal():
         output_shapes=((shape_ts, shape_tab), ())  # Shapes for inputs and targets
     )
 
-    # Define a simple model
-    # model = tf.keras.Sequential([
-    #     tf.keras.layers.Dense(32, activation="relu", input_shape=(10,)),
-    #     tf.keras.layers.Dense(16, activation="relu"),
-    #     tf.keras.layers.Dense(1)  # Output layer for regression
-    # ])
-
     input_ts = tf.keras.layers.Input(shape=shape_ts)
     x = tf.keras.layers.Dense(32, activation="relu")(input_ts)
-    x = tf.keras.layers.Dense(16, activation="relu")(input_ts)
+    x = tf.keras.layers.Dense(16, activation="relu")(x)
     x = tf.keras.layers.Flatten()(x)
 
     input_tab = tf.keras.layers.Input(shape=shape_tab)
