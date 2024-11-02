@@ -1,3 +1,18 @@
+### Install
+
+Working:
+- numpy=1.19.5
+- tensorflow-gpu=2.2.0
+- pandas=1.2.0
+
+These could work:
+- pyarrow=17.0.0
+- fastparquet=0.4.1
+
+### Fix
+
+- pandas, pyarrow and fastparquet are not compatible
+
 Metrics in develop:
 
 Metrics with only numerical variables:
