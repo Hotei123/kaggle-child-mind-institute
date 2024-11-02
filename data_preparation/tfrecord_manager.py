@@ -12,7 +12,6 @@ class TFRecordManager:
             shutil.rmtree(self.path_output)
         os.makedirs(self.path_output)
         
-
     def parse_example(self, index: int):
         pass
 
@@ -29,16 +28,28 @@ class TFRecordManager:
             with tf.io.TFRecordWriter(filename) as writer:
                 writer.write(example.SerializeToString())
 
-    def get_tfrecord_dataset(self) -> tf.data.Dataset:
+    def get_tfrecord_dataset(self, num_parallel_calls: int, 
+                             shuffle_buffer_size: int, 
+                             batch_size: int, 
+                             size_prefetch: int) -> tf.data.Dataset:
+        """
+        Args:
+            - num_parallel_calls:  number elements to process asynchronously in parallel.
+            - shuffle_buffer_size: should be a significant portion of the dataset size.
+            - batch_size: should preferably take values like 128, 64, 32, 16 or 8
+            - size_prefetch: should be 1-2 times the batch size, tf.data.AUTOTUNE not available in earlier versions
+        Returns:
+            - Dataset: a `Dataset`.
+        """
 
         raw_dataset = tf.data.TFRecordDataset(os.listdir(self.path_output))       
         parsed_dataset = raw_dataset.map(self.parse_example, num_parallel_calls=num_parallel_calls)
 
         dataset = (
             parsed_dataset
-            .shuffle(shuffle_buffer_size)  # Significant portion of the dataset size
-            .batch(batch_size)  # 64, 32, 16, 8
-            .prefetch(size_prefetch)  # 1-2 times the batch size, tf.data.AUTOTUNE not available in earlier versions
+            .shuffle(shuffle_buffer_size)
+            .batch(batch_size)
+            .prefetch(size_prefetch)
         )
         
         return dataset
