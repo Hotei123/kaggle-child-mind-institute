@@ -1,0 +1,44 @@
+import os
+import tensorflow as tf
+import shutil
+
+
+class TFRecordManager:
+    def __init__(self, n_examples: int, n_examples_per_file: int, path_output: str):
+        self.n_examples: int = n_examples
+        self.n_examples_per_file: int = n_examples_per_file
+        self.path_output: str = path_output
+        if os.path.exists(self.path_output):
+            shutil.rmtree(self.path_output)
+        os.makedirs(self.path_output)
+        
+
+    def parse_example(self, index: int):
+        pass
+
+    # TODO: define the function that transforms the data that will be passed to the trainer in the form of 
+    #  (x, y)
+
+    def write_tfrecords(self):
+        index_len: int = len(str(int(self.n_examples / self.n_examples_per_file + 3)))
+        for count_example in range(self.n_examples):
+            example = self.parse_example(count_example)
+            file_index = count_example // self.n_examples_per_file
+            filename = os.path.join(self.path_output, 
+                                    f'data_{str(file_index).zfill(index_len)}.tfrecord')
+            with tf.io.TFRecordWriter(filename) as writer:
+                writer.write(example.SerializeToString())
+
+    def get_tfrecord_dataset(self) -> tf.data.Dataset:
+
+        raw_dataset = tf.data.TFRecordDataset(os.listdir(self.path_output))       
+        parsed_dataset = raw_dataset.map(self.parse_example, num_parallel_calls=num_parallel_calls)
+
+        dataset = (
+            parsed_dataset
+            .shuffle(shuffle_buffer_size)  # Significant portion of the dataset size
+            .batch(batch_size)  # 64, 32, 16, 8
+            .prefetch(size_prefetch)  # 1-2 times the batch size, tf.data.AUTOTUNE not available in earlier versions
+        )
+        
+        return dataset
