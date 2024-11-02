@@ -2,7 +2,6 @@ import os
 from typing import Any, Dict, List
 import numpy as np
 import pandas as pd
-from sklearn.metrics import confusion_matrix
 import xgboost as xgb
 from sklearn.metrics import cohen_kappa_score
 from pipeline_steps.step_prepare_data import StepPrepareData
