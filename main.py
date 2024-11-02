@@ -8,6 +8,7 @@
 
 import pandas as pd
 import yaml
+from pipeline_steps.step_prepare_data import StepPrepareData
 from pipeline_steps.step_train import StepTrain
 from sandbox.dataset_minimal import train_minimal
 from sandbox.tfrecord_pipeline import create_data, print_tfrecords, write_tfrecords
@@ -19,8 +20,8 @@ if __name__ == '__main__':
     with open('params.yaml', 'r') as f:
         config = yaml.safe_load(f)
 
-    # step_prepare_data = StepPrepareData(config)
-    # step_prepare_data.export_partitions()
+    step_prepare_data = StepPrepareData(config)
+    step_prepare_data.export_partitions()
 
     step_train = StepTrain(config)
     step_train.train()
