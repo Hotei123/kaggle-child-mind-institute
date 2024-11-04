@@ -12,11 +12,11 @@ class TFRecordManager:
             shutil.rmtree(self.path_output)
         os.makedirs(self.path_output)
         
-    def get_example(self, index: int):
+    def get_example(self, index: int) -> tf.train.Example:
         """This function returns an example from the raw data. """
         pass
 
-    def parse_example(self, example_proto):
+    def parse_example(self, example_proto: tf.train.Example):
         # Returns the parsed data from the input `tf.train.Example` proto.
         pass
 
