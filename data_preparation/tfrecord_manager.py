@@ -12,16 +12,18 @@ class TFRecordManager:
             shutil.rmtree(self.path_output)
         os.makedirs(self.path_output)
         
-    def parse_example(self, index: int):
+    def get_example(self, index: int):
+        """This function returns an example from the raw data. """
         pass
 
-    # TODO: define the function that transforms the data that will be passed to the trainer in the form of 
-    #  (x, y)
+    def parse_example(self, example_proto):
+        # Returns the parsed data from the input `tf.train.Example` proto.
+        pass
 
     def write_tfrecords(self):
         index_len: int = len(str(int(self.n_examples / self.n_examples_per_file + 3)))
         for count_example in range(self.n_examples):
-            example = self.parse_example(count_example)
+            example = self.get_example(count_example)
             file_index = count_example // self.n_examples_per_file
             filename = os.path.join(self.path_output, 
                                     f'data_{str(file_index).zfill(index_len)}.tfrecord')
