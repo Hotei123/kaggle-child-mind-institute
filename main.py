@@ -8,6 +8,7 @@
 
 import pandas as pd
 import yaml
+from data_preparation.tfrecord_manager_child_mind import TFRecordManagerChildMind
 from pipeline_steps.step_prepare_data import StepPrepareData
 from pipeline_steps.step_train import StepTrain
 from sandbox.dataset_minimal import train_minimal
@@ -20,21 +21,18 @@ if __name__ == '__main__':
     with open('params.yaml', 'r') as f:
         config = yaml.safe_load(f)
 
-    step_prepare_data = StepPrepareData(config)
-    step_prepare_data.export_partitions()
+    tfrec_man = TFRecordManagerChildMind(config)
+    example_0 = tfrec_man.get_example(0)
+    parsed_example_0 = tfrec_man.parse_example(example_0)
+    x = 0
 
-    step_train = StepTrain(config)
-    step_train.train()
+    # step_prepare_data = StepPrepareData(config)
+    # step_prepare_data.export_partitions()
+
+    # step_train = StepTrain(config)
+    # step_train.train()
 
 # TODO: Use the full time series with tensorflow data.Dataset.from_generator
-# TODO: Fix the fact that now only 2 variables are being passed from the CSV data
 # TODO: Normalize the time series, possibly eliminating columns
 # TODO: Separate time series into continuous parts
 # TODO: Ensemble models
-
-    # train_hard_coded()
-
-    # train_minimal()
-
-    # write_tfrecords()
-    # print_tfrecords(['output/test.tfrecord'])

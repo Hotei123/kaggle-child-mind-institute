@@ -11,6 +11,18 @@ class TFRecordManager:
         if os.path.exists(self.path_output):
             shutil.rmtree(self.path_output)
         os.makedirs(self.path_output)
+
+    @staticmethod
+    def _bytes_feature(value):
+        """Returns a bytes_list from a string / byte."""
+        if isinstance(value, type(tf.constant(0))):
+            value = value.numpy() # BytesList won't unpack a string from an EagerTensor.
+        return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
+
+    @staticmethod
+    def _float_feature(value):
+        """Returns a float_list from a float / double."""
+        return tf.train.Feature(float_list=tf.train.FloatList(value=[value]))
         
     def get_example(self, index: int) -> tf.train.Example:
         """This function returns an example from the raw data. """
