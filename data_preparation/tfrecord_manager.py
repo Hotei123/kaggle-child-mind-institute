@@ -28,7 +28,7 @@ class TFRecordManager:
         """This function returns an example from the raw data. """
         pass
 
-    def parse_example(self, example_proto: tf.train.Example):
+    def parse_example(self, example: tf.train.Example):
         # Returns the parsed data from the input `tf.train.Example` proto.
         pass
 
