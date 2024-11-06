@@ -9,7 +9,7 @@ import pathlib
 class TFRecordManagerChildMind(TFRecordManager):
 
     def __init__(self, config):
-
+        # TODO: avoid overriding the constructor
         non_temporal_data_path = config['prepare_data']['path_tabular_train']
 
         self.data_non_temp: pd.DataFrame = pd.read_csv(non_temporal_data_path)
