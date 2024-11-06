@@ -22,9 +22,7 @@ if __name__ == '__main__':
         config = yaml.safe_load(f)
 
     tfrec_man = TFRecordManagerChildMind(config)
-    example_0 = tfrec_man.get_example(0)
-    parsed_example_0 = tfrec_man.parse_example(example_0)
-    print(parsed_example_0)
+    tfrec_man.write_tfrecords()
 
     # step_prepare_data = StepPrepareData(config)
     # step_prepare_data.export_partitions()
