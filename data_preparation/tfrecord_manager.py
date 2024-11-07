@@ -42,10 +42,14 @@ class TFRecordManager:
             with tf.io.TFRecordWriter(filename) as writer:
                 writer.write(example.SerializeToString())
 
-    def get_tfrecord_dataset(self, num_parallel_calls: int, 
+    def get_tfrecord_dataset(self, 
+                             file_pattern: str,
+                             num_parallel_calls: int, 
                              shuffle_buffer_size: int, 
                              batch_size: int, 
-                             size_prefetch: int) -> tf.data.Dataset:
+                             size_prefetch: int,
+                             cycle_length=6,  # Number of files to read in parallel
+                             ) -> tf.data.Dataset:
         """
         Args:
             - num_parallel_calls:  number elements to process asynchronously in parallel.
@@ -56,7 +60,14 @@ class TFRecordManager:
             - Dataset: a `Dataset`.
         """
 
-        raw_dataset = tf.data.TFRecordDataset(os.listdir(self.path_output))       
+        files = tf.data.Dataset.list_files(file_pattern)
+
+        raw_dataset = files.interleave(
+            tf.data.TFRecordDataset,
+            cycle_length = cycle_length,
+            num_parallel_calls=tf.data.AUTOTUNE
+        )
+     
         parsed_dataset = raw_dataset.map(self.parse_example, num_parallel_calls=num_parallel_calls)
 
         dataset = (
