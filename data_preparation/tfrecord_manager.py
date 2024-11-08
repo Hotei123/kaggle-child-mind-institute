@@ -4,9 +4,16 @@ import shutil
 
 
 class TFRecordManager:
-    def __init__(self, n_examples: int, n_examples_per_file: int, path_output: str):
-        self.n_examples: int = n_examples
-        self.n_examples_per_file: int = n_examples_per_file
+    def __init__(self, 
+                 n_examples_train: int,
+                 n_examples_per_file_train: int, 
+                 n_examples_submit: int,
+                 n_examples_per_file_submit: int, 
+                 path_output: str):
+        self.n_examples_train: int = n_examples_train
+        self.n_examples_per_file_train: int = n_examples_per_file_train
+        self.n_examples_submit: int = n_examples_submit
+        self.n_examples_per_file_submit: int = n_examples_per_file_submit
         self.path_output: str = path_output
         if os.path.exists(self.path_output):
             shutil.rmtree(self.path_output)
@@ -24,7 +31,7 @@ class TFRecordManager:
         """Returns a float_list from a float / double."""
         return tf.train.Feature(float_list=tf.train.FloatList(value=[value]))
         
-    def get_example(self, index: int) -> tf.train.Example:
+    def get_example(self, index: int, prefix: str) -> tf.train.Example:
         """This function returns an example from the raw data. """
         pass
 
@@ -32,9 +39,7 @@ class TFRecordManager:
         # Returns the parsed data from the input `tf.train.Example` proto.
         pass
 
-    def write_tfrecords(self, prefix: str, is_label: bool):
-        # TODO: write labeled and unlabeled data, and use .filter to select labeled data or partitions for training, 
-        #  or to write unlabeled data for submission.
+    def write_tfrecords(self):
 
         # index_len: int = len(str(int(self.n_examples / self.n_examples_per_file + 3)))
         # for count_example in range(self.n_examples):
@@ -45,23 +50,21 @@ class TFRecordManager:
         #     with tf.io.TFRecordWriter(filename) as writer:
         #         writer.write(example.SerializeToString())
 
+        for prefix, n_examples, n_examples_per_file in [('train', self.n_examples_train, self.n_examples_per_file_train),
+                                                        ('submit', self.n_examples_submit, self.n_examples_per_file_submit)]:
+            num_files = (n_examples + n_examples_per_file - 1) // n_examples_per_file  # Calculate number of files needed
 
-        # TODO: revise the code below and carry out the above todo.
-        # TODO: differentiate the cases of labeled and unlabeled data with an additional argument in method get_example,
-        #  and add corresponding parameters like subsets sizes as object parameters.
-        num_files = (self.n_examples + self.n_examples_per_file - 1) // self.n_examples_per_file  # Calculate number of files needed
+            for file_count in range(num_files):
+                filename = f"{prefix}_{file_count}.tfrecord"
+                count_start = file_count * n_examples_per_file
+                count_end = min(count_start + n_examples_per_file, n_examples)
 
-        for file_count in range(num_files):
-            filename = f"{prefix}_{file_count}.tfrecord"
-            count_start = file_count * self.n_examples_per_file
-            count_end = min(count_start + self.n_examples_per_file, self.n_examples)
+                with tf.io.TFRecordWriter(filename) as writer:
+                    for i in range(count_start, count_end):
+                        example = self.get_example(i, prefix)
+                        writer.write(example)
 
-            with tf.io.TFRecordWriter(filename) as writer:
-                for i in range(count_start, count_end):
-                    example = self.get_example(i)
-                    writer.write(example)
-
-            print(f"Saved {filename} with {count_end - count_start} examples.")
+                print(f"Saved {filename} with {count_end - count_start} examples.")
 
     def get_tfrecord_dataset(self, 
                              file_pattern: str,
