@@ -23,9 +23,6 @@ class TFRecordManagerChildMind(TFRecordManager):
         self.n_examples_per_file_submit: int = config['prepare_data']['n_examples_per_file_submit']
 
         self.path_output: str = pathlib.Path(config['prepare_data']['path_output']).joinpath('tfrecords')
-        if os.path.exists(self.path_output):
-            shutil.rmtree(self.path_output)
-        os.makedirs(self.path_output)
         self.feature_description = {'CGAS-CGAS_Score': tf.io.FixedLenFeature([], tf.float32), 
                                     'Physical-Height': tf.io.FixedLenFeature([], tf.float32)}
 
@@ -39,7 +36,7 @@ class TFRecordManagerChildMind(TFRecordManager):
         feature = {'CGAS-CGAS_Score': self._float_feature(example['CGAS-CGAS_Score']), 
                    'Physical-Height': self._float_feature(example['Physical-Height'])}
         if 'sii' in example:
-            if np.isnan(example['sii']):  # TODO: check this NaN check
+            if np.isnan(example['sii']):
                 feature['sii'] = self._float_feature(-1)
             else:
                 feature['sii'] = self._float_feature(example['sii'])

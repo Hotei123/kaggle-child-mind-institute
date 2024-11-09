@@ -16,9 +16,6 @@ class TFRecordManager:
         self.n_examples_submit: int = n_examples_submit
         self.n_examples_per_file_submit: int = n_examples_per_file_submit
         self.path_output: str = path_output
-        if os.path.exists(self.path_output):
-            shutil.rmtree(self.path_output)
-        os.makedirs(self.path_output)
 
     @staticmethod
     def _bytes_feature(value):
@@ -50,6 +47,10 @@ class TFRecordManager:
         #                             f'data_{str(file_index).zfill(index_len)}.tfrecord')
         #     with tf.io.TFRecordWriter(filename) as writer:
         #         writer.write(example.SerializeToString())
+
+        if os.path.exists(self.path_output):
+            shutil.rmtree(self.path_output)
+        os.makedirs(self.path_output)
 
         for prefix, n_examples, n_examples_per_file in [('train', self.n_examples_train, self.n_examples_per_file_train),
                                                         ('submit', self.n_examples_submit, self.n_examples_per_file_submit)]:
