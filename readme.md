@@ -1,3 +1,12 @@
+### Overview
+
+This repo corresponds to the Kaggle competition 
+[Child Mind Institute — Problematic Internet Use](https://www.kaggle.com/competitions/child-mind-institute-problematic-internet-use).
+
+My first solution consisted on copying what most of the public solutions did: merging the non-temporal data with a .describe() of the time series data. This yielded a CV metric of 0.438 by filling the missing data with an XGBoost prediction.
+
+In order to better use the time series data, I wrote all the data into TFRecords, and trained a Keras model with it.
+
 ### Install
 
 Working:
@@ -13,7 +22,7 @@ These could work:
 
 - pandas, pyarrow and fastparquet are not compatible
 
-Metrics in develop:
+### Metrics in each iteration:
 
 Metrics with only numerical variables:
 CV metrics: [0.304, 0.342, 0.448, 0.385, 0.403, 0.309, 0.353, 0.396, 0.258, 0.341].
