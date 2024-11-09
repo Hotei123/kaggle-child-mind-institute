@@ -23,7 +23,7 @@ if __name__ == '__main__':
 
     tfrec_man = TFRecordManagerChildMind(config)
     # tfrec_man.write_tfrecords()
-    dataset = tfrec_man.get_tfrecord_dataset('output/tfrecords/submit_*', 6, 100, 64, 1, (lambda x: x))
+    dataset = tfrec_man.get_tfrecord_dataset('output/tfrecords/submit_*', 6, 100, 4, 1, (lambda x: x))
 
     # step_prepare_data = StepPrepareData(config)
     # step_prepare_data.export_partitions()

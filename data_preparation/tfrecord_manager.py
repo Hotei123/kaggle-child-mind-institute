@@ -92,22 +92,36 @@ class TFRecordManager:
             - Dataset: a `Dataset`.
         """
 
-        files = tf.data.Dataset.list_files(file_pattern)
-
-        if file_pattern.startswith("train"):
+        if 'train' in file_pattern:
+            files = tf.data.Dataset.list_files(file_pattern, shuffle=True)
             raw_dataset = files.interleave(
                 tf.data.TFRecordDataset,
                 cycle_length = cycle_length,
-                num_parallel_calls=tf.data.AUTOTUNE
+                num_parallel_calls=num_parallel_calls
             )
         else:
+            files = tf.data.Dataset.list_files(file_pattern, shuffle=False)
+            for filename in files:
+                print(filename)
             raw_dataset = tf.data.TFRecordDataset(files)
      
-        raw_dataset = raw_dataset.filter(function_filter)
-        parsed_dataset = raw_dataset.map(self.parse_example, num_parallel_calls=tf.data.AUTOTUNE)
+        for x in raw_dataset:
+            print(x)
 
-        if file_pattern.startswith("train"):
+        # raw_dataset = raw_dataset.filter(function_filter)
+        parsed_dataset = raw_dataset.map(self.parse_example, num_parallel_calls=num_parallel_calls)
+
+        print('Parsed dataset without shuffling and batching.')
+        for x in parsed_dataset:
+            print(x)
+
+        if 'train' in file_pattern:
             parsed_dataset = parsed_dataset.shuffle(shuffle_buffer_size)
-        dataset = dataset.batch(batch_size).prefetch(size_prefetch)
+
+        parsed_dataset = parsed_dataset.batch(batch_size).prefetch(size_prefetch)
         
-        return dataset
+        print('Parsed dataset after batching.')
+        for x in parsed_dataset:
+            print(x)
+
+        return parsed_dataset

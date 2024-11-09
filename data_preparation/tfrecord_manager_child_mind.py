@@ -35,6 +35,7 @@ class TFRecordManagerChildMind(TFRecordManager):
         # TODO: use all the tabular and time series variables for writing the TFRecords
         feature = {'CGAS-CGAS_Score': self._float_feature(example['CGAS-CGAS_Score']), 
                    'Physical-Height': self._float_feature(example['Physical-Height'])}
+        # TODO: fill all missing data
         if 'sii' in example:
             if np.isnan(example['sii']):
                 feature['sii'] = self._float_feature(-1)
@@ -46,4 +47,4 @@ class TFRecordManagerChildMind(TFRecordManager):
 
     def parse_example(self, example: tf.train.Example):
         # Returns the parsed data from the input `tf.train.Example` proto.
-        return tf.io.parse_single_example(example.SerializeToString(), self.feature_description)
+        return tf.io.parse_single_example(example, self.feature_description)
