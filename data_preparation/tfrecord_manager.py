@@ -108,20 +108,12 @@ class TFRecordManager:
         for x in raw_dataset:
             print(x)
 
-        # raw_dataset = raw_dataset.filter(function_filter)
+        raw_dataset = raw_dataset.filter(function_filter)
         parsed_dataset = raw_dataset.map(self.parse_example, num_parallel_calls=num_parallel_calls)
-
-        print('Parsed dataset without shuffling and batching.')
-        for x in parsed_dataset:
-            print(x)
 
         if 'train' in file_pattern:
             parsed_dataset = parsed_dataset.shuffle(shuffle_buffer_size)
 
         parsed_dataset = parsed_dataset.batch(batch_size).prefetch(size_prefetch)
-        
-        print('Parsed dataset after batching.')
-        for x in parsed_dataset:
-            print(x)
 
         return parsed_dataset
