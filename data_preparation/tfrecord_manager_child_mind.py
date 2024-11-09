@@ -1,5 +1,6 @@
 import os
 import shutil
+import numpy as np
 import pandas as pd
 from data_preparation.tfrecord_manager import TFRecordManager
 import tensorflow as tf
@@ -11,7 +12,7 @@ class TFRecordManagerChildMind(TFRecordManager):
     def __init__(self, config):
         # TODO: avoid overriding the constructor
         path_non_temporal_train = config['prepare_data']['path_tabular_train']
-        path_non_temporal_submit = config['prepare_data']['path_tabular_submit']
+        path_non_temporal_submit = config['prepare_data']['path_tabular_test']
         # Train data
         self.data_non_temp_train: pd.DataFrame = pd.read_csv(path_non_temporal_train)
         self.n_examples_train: int = self.data_non_temp_train.shape[0]
@@ -38,7 +39,7 @@ class TFRecordManagerChildMind(TFRecordManager):
         feature = {'CGAS-CGAS_Score': self._float_feature(example['CGAS-CGAS_Score']), 
                    'Physical-Height': self._float_feature(example['Physical-Height'])}
         if 'sii' in example:
-            if example['sii'].isna():  # TODO: check this NaN check
+            if np.isnan(example['sii']):  # TODO: check this NaN check
                 feature['sii'] = self._float_feature(-1)
             else:
                 feature['sii'] = self._float_feature(example['sii'])

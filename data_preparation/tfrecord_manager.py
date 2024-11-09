@@ -1,4 +1,5 @@
 import os
+import pathlib
 import tensorflow as tf
 import shutil
 
@@ -52,17 +53,19 @@ class TFRecordManager:
 
         for prefix, n_examples, n_examples_per_file in [('train', self.n_examples_train, self.n_examples_per_file_train),
                                                         ('submit', self.n_examples_submit, self.n_examples_per_file_submit)]:
-            num_files = (n_examples + n_examples_per_file - 1) // n_examples_per_file  # Calculate number of files needed
+            num_files = (n_examples + n_examples_per_file - 1) // n_examples_per_file
 
             for file_count in range(num_files):
-                filename = f"{prefix}_{file_count}.tfrecord"
+                filename = pathlib.Path(self.path_output).joinpath(f"{prefix}_{str(file_count).zfill(len(str(num_files)) + 1)}.tfrecord")
+                print(f'Writing file {filename}')
                 count_start = file_count * n_examples_per_file
                 count_end = min(count_start + n_examples_per_file, n_examples)
 
-                with tf.io.TFRecordWriter(filename) as writer:
+                with tf.io.TFRecordWriter(str(filename)) as writer:
                     for i in range(count_start, count_end):
+                        print(f'Writing example {i}')
                         example = self.get_example(i, prefix)
-                        writer.write(example)
+                        writer.write(example.SerializeToString())
 
                 print(f"Saved {filename} with {count_end - count_start} examples.")
 
@@ -72,7 +75,7 @@ class TFRecordManager:
                              shuffle_buffer_size: int, 
                              batch_size: int, 
                              size_prefetch: int,
-                             function_filter: function,
+                             function_filter: callable,
                              cycle_length=6,  # Number of files to read in parallel
                              ) -> tf.data.Dataset:
         """
