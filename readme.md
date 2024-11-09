@@ -7,6 +7,9 @@ My first solution consisted on copying what most of the public solutions did: me
 
 In order to better use the time series data, I wrote all the data into TFRecords, and trained a Keras model with it.
 
+TODO: describe how to run the shallow and deep solutions
+TODO: delete the sections of this file that are not going to be published.
+
 ### Install
 
 Working:
