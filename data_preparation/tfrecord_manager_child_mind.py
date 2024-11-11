@@ -35,7 +35,6 @@ class TFRecordManagerChildMind(TFRecordManager):
         # TODO: use all the tabular and time series variables for writing the TFRecords
         feature = {'CGAS-CGAS_Score': self._float_feature(example['CGAS-CGAS_Score']), 
                    'Physical-Height': self._float_feature(example['Physical-Height'])}
-        # TODO: fill all missing data
         if 'sii' in example:
             if np.isnan(example['sii']):
                 feature['sii'] = self._float_feature(-1)
