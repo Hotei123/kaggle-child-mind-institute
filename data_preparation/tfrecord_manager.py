@@ -104,9 +104,6 @@ class TFRecordManager:
             for filename in files:
                 print(filename)
             raw_dataset = tf.data.TFRecordDataset(files)
-     
-        for x in raw_dataset:
-            print(x)
 
         raw_dataset = raw_dataset.filter(function_filter)
         parsed_dataset = raw_dataset.map(self.parse_example, num_parallel_calls=num_parallel_calls)
