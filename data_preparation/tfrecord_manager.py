@@ -64,7 +64,6 @@ class TFRecordManager:
 
                 with tf.io.TFRecordWriter(str(filename)) as writer:
                     for i in range(count_start, count_end):
-                        print(f'Writing example {i}')
                         example = self.get_example(i, prefix)
                         writer.write(example.SerializeToString())
 
