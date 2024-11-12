@@ -39,15 +39,6 @@ class TFRecordManager:
 
     def write_tfrecords(self):
 
-        # index_len: int = len(str(int(self.n_examples / self.n_examples_per_file + 3)))
-        # for count_example in range(self.n_examples):
-        #     example = self.get_example(count_example)
-        #     file_index = count_example // self.n_examples_per_file
-        #     filename = os.path.join(self.path_output, 
-        #                             f'data_{str(file_index).zfill(index_len)}.tfrecord')
-        #     with tf.io.TFRecordWriter(filename) as writer:
-        #         writer.write(example.SerializeToString())
-
         if os.path.exists(self.path_output):
             shutil.rmtree(self.path_output)
         os.makedirs(self.path_output)

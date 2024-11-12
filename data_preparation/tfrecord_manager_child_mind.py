@@ -24,6 +24,7 @@ class TFRecordManagerChildMind(TFRecordManager):
 
         self.path_output: str = pathlib.Path(config['prepare_data']['path_output']).joinpath('tfrecords')
         self.feature_description = {var_name: tf.io.FixedLenFeature([], tf.float32) for var_name in config['prepare_data']['vars_num']}
+        self.feature_description['sii'] = tf.io.FixedLenFeature([], tf.float32)
         self.vars_num = config['prepare_data']['vars_num']
     def get_example(self, index: int, prefix: str) -> tf.train.Example:
         # This function returns an example from the raw data.
@@ -32,10 +33,11 @@ class TFRecordManagerChildMind(TFRecordManager):
         elif prefix == 'submit':
             example = self.data_non_temp_submit.iloc[index].to_dict()
         # TODO: use all the tabular and time series variables for writing the TFRecords
+        # TODO: write categorical variables
+        # TODO: normalize data previous to writing the TFRecords
         # feature = {'CGAS-CGAS_Score': self._float_feature(example['CGAS-CGAS_Score']), 
         #            'Physical-Height': self._float_feature(example['Physical-Height'])}
         feature = {var_name: self._float_feature(example[var_name]) for var_name in self.vars_num}
-        print('Getting feature.')
         if 'sii' in example:
             if np.isnan(example['sii']):
                 feature['sii'] = self._float_feature(-1)

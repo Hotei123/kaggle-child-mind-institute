@@ -22,12 +22,9 @@ if __name__ == '__main__':
         config = yaml.safe_load(f)
 
     tfrec_man = TFRecordManagerChildMind(config)
-    tfrec_man.write_tfrecords()
+    # tfrec_man.write_tfrecords()
 
     dataset = tfrec_man.get_tfrecord_dataset('output/tfrecords/train_*', 6, 100, 8, 1, (lambda x: True))
-
-    # x = dataset.take(0)
-    # print(x)
 
     count = 0
     for x in dataset:
