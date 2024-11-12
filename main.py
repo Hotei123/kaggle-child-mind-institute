@@ -21,23 +21,23 @@ if __name__ == '__main__':
     with open('params.yaml', 'r') as f:
         config = yaml.safe_load(f)
 
-    tfrec_man = TFRecordManagerChildMind(config)
-    # tfrec_man.write_tfrecords()
+    # tfrec_man = TFRecordManagerChildMind(config)
+    # # tfrec_man.write_tfrecords()
 
-    dataset = tfrec_man.get_tfrecord_dataset('output/tfrecords/train_*', 6, 100, 8, 1, (lambda x: True))
+    # dataset = tfrec_man.get_tfrecord_dataset('output/tfrecords/train_*', 6, 100, 8, 1, (lambda x: True))
 
-    count = 0
-    for x in dataset:
-        count += 1
-        if count > 10:
-            break
-        print(x)
+    # count = 0
+    # for x in dataset:
+    #     count += 1
+    #     if count > 10:
+    #         break
+    #     print(x)
 
-    # step_prepare_data = StepPrepareData(config)
-    # step_prepare_data.export_partitions()
+    step_prepare_data = StepPrepareData(config)
+    step_prepare_data.export_partitions()
 
-    # step_train = StepTrain(config)
-    # step_train.train()
+    step_train = StepTrain(config)
+    step_train.train()
 
 # TODO: Use the full time series with tensorflow data.Dataset.from_generator
 # TODO: Normalize the time series, possibly eliminating columns
