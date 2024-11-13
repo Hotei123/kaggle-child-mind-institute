@@ -21,10 +21,10 @@ if __name__ == '__main__':
     with open('params.yaml', 'r') as f:
         config = yaml.safe_load(f)
 
-    # tfrec_man = TFRecordManagerChildMind(config)
-    # # tfrec_man.write_tfrecords()
+    tfrec_man = TFRecordManagerChildMind(config)
+    # tfrec_man.write_tfrecords()
 
-    # dataset = tfrec_man.get_tfrecord_dataset('output/tfrecords/train_*', 6, 100, 8, 1, (lambda x: True))
+    dataset = tfrec_man.get_tfrecord_dataset('output/tfrecords/train_*', 6, 100, 8, 1, (lambda x: True))
 
     # count = 0
     # for x in dataset:
@@ -32,12 +32,27 @@ if __name__ == '__main__':
     #     if count > 10:
     #         break
     #     print(x)
+    #     print('\n\n\n')
 
-    step_prepare_data = StepPrepareData(config)
-    step_prepare_data.export_partitions()
 
-    step_train = StepTrain(config)
-    step_train.train()
+    from tensorflow.keras import layers, models, Input
+
+    # Define the input
+    input_tensor = Input(shape=(2,))
+    x = layers.Dense(64, activation='relu')(input_tensor)
+    x = layers.Dense(32, activation='relu')(x)
+    output_tensor = layers.Dense(4, activation='softmax')(x)
+    model = models.Model(inputs=input_tensor, outputs=output_tensor)
+    model.compile(optimizer='adam', 
+                loss='sparse_categorical_crossentropy', 
+                metrics=['accuracy'])
+    model.fit(dataset)
+
+    # step_prepare_data = StepPrepareData(config)
+    # step_prepare_data.export_partitions()
+
+    # step_train = StepTrain(config)
+    # step_train.train()
 
 # TODO: Use the full time series with tensorflow data.Dataset.from_generator
 # TODO: Normalize the time series, possibly eliminating columns

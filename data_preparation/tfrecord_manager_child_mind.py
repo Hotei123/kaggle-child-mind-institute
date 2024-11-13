@@ -35,8 +35,6 @@ class TFRecordManagerChildMind(TFRecordManager):
         # TODO: use all the tabular and time series variables for writing the TFRecords
         # TODO: write categorical variables
         # TODO: normalize data previous to writing the TFRecords
-        # feature = {'CGAS-CGAS_Score': self._float_feature(example['CGAS-CGAS_Score']), 
-        #            'Physical-Height': self._float_feature(example['Physical-Height'])}
         feature = {var_name: self._float_feature(example[var_name]) for var_name in self.vars_num}
         if 'sii' in example:
             if np.isnan(example['sii']):
@@ -49,4 +47,7 @@ class TFRecordManagerChildMind(TFRecordManager):
 
     def parse_example(self, example: tf.train.Example):
         # Returns the parsed data from the input `tf.train.Example` proto.
-        return tf.io.parse_single_example(example, self.feature_description)
+        example_parsed = tf.io.parse_single_example(example, self.feature_description)
+        x = tf.stack([example_parsed['Physical-Diastolic_BP'], 
+                      example_parsed['PreInt_EduHx-computerinternet_hoursday']], axis=0)
+        return x, example_parsed['sii']
