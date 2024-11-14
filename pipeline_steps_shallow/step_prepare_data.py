@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import pathlib
 from tqdm import tqdm
+import yaml
 
 
 class StepPrepareData:
@@ -70,5 +71,7 @@ class StepPrepareData:
 
 
 if __name__ == '__main__':
-    step_prepare_data = StepPrepareData()
+    with open('params.yaml', 'r') as f:
+        config = yaml.safe_load(f)
+    step_prepare_data = StepPrepareData(config)
     step_prepare_data.export_partitions()

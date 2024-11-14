@@ -4,7 +4,8 @@ import numpy as np
 import pandas as pd
 import xgboost as xgb
 from sklearn.metrics import cohen_kappa_score
-from pipeline_steps.step_prepare_data import StepPrepareData
+import yaml
+from step_prepare_data import StepPrepareData
 
 
 class StepTrain:
@@ -67,3 +68,10 @@ class StepTrain:
 
         submission = pd.DataFrame({'id': data_test_raw['id'], self.step_prepare_data.var_target: y_pred_test})
         submission.to_csv(os.path.join(path_output, 'submission.csv'), index=False)
+
+
+if __name__ == '__main__':
+    with open('params.yaml', 'r') as f:
+        config = yaml.safe_load(f)
+    step_train = StepTrain(config)
+    step_train.train()
