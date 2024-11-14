@@ -41,7 +41,7 @@ def train_minimal():
     model.compile(optimizer="adam", loss="mse", metrics=["mae"])
 
     # Prepare the dataset for training
-    train_dataset = dataset.batch(32).prefetch(tf.data.experimental.AUTOTUNE)
+    train_dataset = dataset.batch(16).prefetch(1)
 
     # Train the model
     model.fit(train_dataset, epochs=5)
