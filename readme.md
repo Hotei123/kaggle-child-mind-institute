@@ -11,6 +11,12 @@ TODO: describe how to run the shallow and deep solutions
 TODO: delete the sections of this file that are not going to be published.
 TODO: finish the TFRecord writing and training
 
+### DVC Pipelines
+
+The data preparation and training are different for the cases of shallow and deep learning, because in the latter I have to use TFRecord files, and a different training code. That's why there are two DVC pipelines: one for shallow models and one for deep learning models.
+
+For running the DVC pipeline for shallow training, run `dvc repro dvc repro pipeline_steps_shallow/dvc.yaml`. For the case of the Keras (deep learning) training, run `dvc repro dvc repro pipeline_steps_shallow/dvc.yaml`.
+
 ### Metrics in each iteration:
 
 Metrics with only numerical variables:
