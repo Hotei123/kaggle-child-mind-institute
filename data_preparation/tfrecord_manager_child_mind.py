@@ -48,6 +48,10 @@ class TFRecordManagerChildMind(TFRecordManager):
     def parse_example(self, example: tf.train.Example):
         # Returns the parsed data from the input `tf.train.Example` proto.
         example_parsed = tf.io.parse_single_example(example, self.feature_description)
-        x = tf.stack([example_parsed['Physical-Diastolic_BP'], 
-                      example_parsed['PreInt_EduHx-computerinternet_hoursday']], axis=0)
-        return x, example_parsed['sii']
+        x1 = tf.stack([example_parsed['Physical-Diastolic_BP'], 
+                       example_parsed['PreInt_EduHx-computerinternet_hoursday']], axis=0)
+        x2 = tf.stack([example_parsed['Physical-BMI'], 
+                       example_parsed['Physical-Height'],
+                       example_parsed['Physical-Weight']], axis=0)
+        example_parsed['sii'] = tf.where(tf.math.is_nan(example_parsed['sii']), 0.0, example_parsed['sii'])
+        return (x1, x2), example_parsed['sii']
