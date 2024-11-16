@@ -1,10 +1,8 @@
-import os
-import shutil
 import numpy as np
 import pandas as pd
-from data_preparation.tfrecord_manager import TFRecordManager
 import tensorflow as tf
 import pathlib
+from pipeline_deep.data_preparation.tfrecord_manager import TFRecordManager
 
 
 class TFRecordManagerChildMind(TFRecordManager):

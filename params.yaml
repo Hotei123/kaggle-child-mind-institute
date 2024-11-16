@@ -4,6 +4,8 @@ prepare_data:
   path_series_train: data/child-mind-institute-problematic-internet-use/series_train
   path_series_test: data/child-mind-institute-problematic-internet-use/series_test
   path_output: output/
+  n_examples_per_file_train: 10
+  n_examples_per_file_submit: 10
   # Kaggle paths:
   # - path_train_raw: /kaggle/input/child-mind-institute-problematic-internet-use/train.csv
   # - path_test_raw: /kaggle/input/child-mind-institute-problematic-internet-use/test.csv

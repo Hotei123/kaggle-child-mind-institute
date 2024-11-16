@@ -1,5 +1,5 @@
 import yaml
-from data_preparation.tfrecord_manager_child_mind import TFRecordManagerChildMind
+from pipeline_deep.data_preparation.tfrecord_manager_child_mind import TFRecordManagerChildMind
 
 
 if __name__ == '__main__':
