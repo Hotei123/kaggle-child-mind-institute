@@ -3,6 +3,14 @@ stages:
   prepare_data_shallow:
     cmd: python -m pipeline_shallow.stage_prepare_data
     deps:
+    - path: data/child-mind-institute-problematic-internet-use/series_test.parquet
+      md5: 98b2973ccf5c9bc392d7de70c1023d87.dir
+      size: 8320687
+      nfiles: 2
+    - path: data/child-mind-institute-problematic-internet-use/series_train.parquet
+      md5: 1820011feb4acdd32266d42bb858d10e.dir
+      size: 6719319552
+      nfiles: 996
     - path: data/child-mind-institute-problematic-internet-use/test.csv
       md5: 6a2bd051fcd069d7e28a81a897f75791
       size: 4371
@@ -164,6 +172,14 @@ stages:
   prepare_data_deep:
     cmd: python -m pipeline_deep.stage_write_tfrecords
     deps:
+    - path: data/child-mind-institute-problematic-internet-use/series_test.parquet
+      md5: 98b2973ccf5c9bc392d7de70c1023d87.dir
+      size: 8320687
+      nfiles: 2
+    - path: data/child-mind-institute-problematic-internet-use/series_train.parquet
+      md5: 1820011feb4acdd32266d42bb858d10e.dir
+      size: 6719319552
+      nfiles: 996
     - path: data/child-mind-institute-problematic-internet-use/test.csv
       md5: 6a2bd051fcd069d7e28a81a897f75791
       size: 4371
@@ -175,16 +191,16 @@ stages:
       size: 295
     outs:
     - path: output/tfrecords/
-      md5: ce9df94d4c845cf02bc7995a4527974b.dir
+      md5: 7dfc057d68802e7c9287ca8e67bba6e3.dir
       size: 5767020
       nfiles: 398
   train_deep:
     cmd: python -m pipeline_deep.stage_train
     deps:
     - path: output/tfrecords/
-      md5: ce9df94d4c845cf02bc7995a4527974b.dir
+      md5: 7dfc057d68802e7c9287ca8e67bba6e3.dir
       size: 5767020
       nfiles: 398
     - path: pipeline_deep/stage_train.py
-      md5: 470bae51368bbeb9d794e639312709d5
-      size: 1191
+      md5: e1798aeec5a9f6da493c3683ce79ff2e
+      size: 1186

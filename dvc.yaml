@@ -5,6 +5,8 @@ stages:
     - pipeline_shallow/stage_prepare_data.py
     - data/child-mind-institute-problematic-internet-use/train.csv
     - data/child-mind-institute-problematic-internet-use/test.csv
+    - data/child-mind-institute-problematic-internet-use/series_train.parquet
+    - data/child-mind-institute-problematic-internet-use/series_test.parquet
     params:
     - prepare_data.var_target
     - prepare_data.vars_cat
@@ -32,6 +34,8 @@ stages:
     - pipeline_deep/stage_write_tfrecords.py
     - data/child-mind-institute-problematic-internet-use/train.csv
     - data/child-mind-institute-problematic-internet-use/test.csv
+    - data/child-mind-institute-problematic-internet-use/series_train.parquet
+    - data/child-mind-institute-problematic-internet-use/series_test.parquet
     outs:
     - output/tfrecords/
   train_deep:
@@ -39,3 +43,4 @@ stages:
     deps:
     - pipeline_deep/stage_train.py
     - output/tfrecords/
+  
