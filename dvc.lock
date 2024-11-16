@@ -202,5 +202,5 @@ stages:
       size: 5767020
       nfiles: 398
     - path: pipeline_deep/stage_train.py
-      md5: e1798aeec5a9f6da493c3683ce79ff2e
-      size: 1186
+      md5: a3be64c86d928ee7339114deb046219f
+      size: 1462
