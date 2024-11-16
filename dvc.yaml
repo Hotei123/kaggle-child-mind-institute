@@ -43,4 +43,3 @@ stages:
     deps:
     - pipeline_deep/stage_train.py
     - output/tfrecords/
-  
