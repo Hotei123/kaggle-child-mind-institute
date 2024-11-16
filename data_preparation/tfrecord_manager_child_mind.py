@@ -35,23 +35,28 @@ class TFRecordManagerChildMind(TFRecordManager):
         # TODO: use all the tabular and time series variables for writing the TFRecords
         # TODO: write categorical variables
         # TODO: normalize data previous to writing the TFRecords
-        feature = {var_name: self._float_feature(example[var_name]) for var_name in self.vars_num}
+        feature = {var_name: self._float_feature(example[var_name]) if not np.isnan(example[var_name]) else self._float_feature(0) 
+                   for var_name in self.vars_num}
         if 'sii' in example:
             if np.isnan(example['sii']):
-                feature['sii'] = self._float_feature(-1)
+                feature['sii'] = self._float_feature(0)
             else:
                 feature['sii'] = self._float_feature(example['sii'])
         else:
-            feature['sii'] = self._float_feature(-1)
+            feature['sii'] = self._float_feature(0)
         return tf.train.Example(features=tf.train.Features(feature=feature))
 
     def parse_example(self, example: tf.train.Example):
         # Returns the parsed data from the input `tf.train.Example` proto.
+        # TODO: use all vars in vars_num
+        # TODO: normalize training
+        # TODO: add time series data (first from describe.(), and then the whole series)
+        # TODO: make predictions of missing target vars
         example_parsed = tf.io.parse_single_example(example, self.feature_description)
-        x1 = tf.stack([example_parsed['Physical-Diastolic_BP'], 
-                       example_parsed['PreInt_EduHx-computerinternet_hoursday']], axis=0)
+        x1 = tf.stack([example_parsed[var] for var in self.vars_num], axis=0)
         x2 = tf.stack([example_parsed['Physical-BMI'], 
                        example_parsed['Physical-Height'],
                        example_parsed['Physical-Weight']], axis=0)
-        example_parsed['sii'] = tf.where(tf.math.is_nan(example_parsed['sii']), 0.0, example_parsed['sii'])
+        x1 = tf.where(tf.math.is_nan(x1), 0.0, x1)
+        x2 = tf.where(tf.math.is_nan(x2), 0.0, x2)
         return (x1, x2), example_parsed['sii']

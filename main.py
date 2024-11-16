@@ -8,20 +8,19 @@ if __name__ == '__main__':
         config = yaml.safe_load(f)
 
     tfrec_man = TFRecordManagerChildMind(config)
-    # tfrec_man.write_tfrecords()
+    tfrec_man.write_tfrecords()
 
     dataset = tfrec_man.get_tfrecord_dataset('output/tfrecords/train_*', 6, 100, 8, 1, (lambda x: True))
 
     from tensorflow.keras import layers, models, Input
 
-    # Define the input
-    input_tensor_1 = Input(shape=(2,))
+    input_tensor_1 = Input(shape=(len(config['prepare_data']['vars_num']),))
     x1 = layers.Dense(64, activation='relu')(input_tensor_1)
     x1 = layers.Dense(32, activation='relu')(x1)
 
     input_tensor_2 = Input(shape=(3,))
     x2 = layers.Dense(64, activation='relu')(input_tensor_2)
-    x2 = layers.Dense(32, activation='relu')(x1)
+    x2 = layers.Dense(32, activation='relu')(x2)
     x = layers.Concatenate()([x1, x2])
 
     output_tensor = layers.Dense(4, activation='softmax')(x)
@@ -33,6 +32,7 @@ if __name__ == '__main__':
     model.fit(dataset)
 
     preds = model.predict(dataset)
+    print(preds)
 
 # TODO: Use the full time series with tensorflow data.Dataset.from_generator
 # TODO: Normalize the time series, possibly eliminating columns
