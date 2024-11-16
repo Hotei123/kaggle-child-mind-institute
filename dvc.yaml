@@ -3,6 +3,8 @@ stages:
     cmd: python -m pipeline_shallow.stage_prepare_data
     deps:
     - pipeline_shallow/stage_prepare_data.py
+    - data/child-mind-institute-problematic-internet-use/train.csv
+    - data/child-mind-institute-problematic-internet-use/test.csv
     params:
     - prepare_data.var_target
     - prepare_data.vars_cat
@@ -23,5 +25,17 @@ stages:
     outs:
     - output/submission.csv
 
+
   prepare_data_deep:
-    cmd: ls
+    cmd: python -m pipeline_deep.write_tfrecords
+    deps:
+    - pipeline_deep/stage_write_tfrecords.py
+    - data/child-mind-institute-problematic-internet-use/train.csv
+    - data/child-mind-institute-problematic-internet-use/test.csv
+    outs:
+    - output/tfrecords/
+  train_deep:
+    cmd: python -m pipeline_deep.stage_train
+    deps:
+    - pipeline_deep/stage_train.py
+    - output/tfrecords/

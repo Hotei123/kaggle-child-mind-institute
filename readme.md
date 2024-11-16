@@ -7,12 +7,33 @@ My first solution consisted of copying what most of the public solutions did: me
 
 In order to better use the time series data, I wrote all the data into TFRecords using multi-threading, and trained a Keras model with it.
 
-TODO: keep unique params.yaml (delete config_kaggle.json), and read the path parameters according to the instance where the code is running (local or Kaggle notebook).
-TODO: finish the TFRecord writing and training
+- TODO: keep unique params.yaml (delete config_kaggle.json), and read the path parameters according to the instance where the code is running (local or Kaggle notebook).
+- TODO: finish the TFRecord writing and training
 
 ### DVC Pipelines
 
-The file `dvc.yaml` contains two pipelines: one for shallow and one for deep learning. To execute the pipelines, just run `dvc repro`, and will be executed the pipelines' stages that have changed. For printing the Directed Acyclic Graph (DAG) corresponding to the pipelines, run `dvc dag`.
+The file `dvc.yaml` contains two pipelines: one for shallow and one for deep learning. To execute the pipelines, just run `dvc repro`, and will be executed the pipelines' stages that have changed. For printing the Directed Acyclic Graph (DAG) corresponding to the pipelines, run `dvc dag`, which should return something like this:
+
+```
++----------------------+ 
+| prepare_data_shallow | 
++----------------------+ 
+            *            
+            *            
+            *            
+    +---------------+    
+    | train_shallow |    
+    +---------------+    
++-------------------+  
+| prepare_data_deep |  
++-------------------+  
+          *            
+          *            
+          *            
+    +------------+     
+    | train_deep |     
+    +------------+
+```     
 
 ### Metrics in each iteration:
 
