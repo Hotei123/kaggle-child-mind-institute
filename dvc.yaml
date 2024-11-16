@@ -1,0 +1,24 @@
+stages:
+  prepare_data:
+    cmd: python -m pipeline_steps_shallow.step_prepare_data
+    deps:
+    - pipeline_steps_shallow/step_prepare_data.py
+    params:
+    - prepare_data.var_target
+    - prepare_data.vars_cat
+    - prepare_data.vars_num
+    outs:
+    - output/train_processed.csv
+    - output/test_processed.csv
+  train:
+    cmd: python -m pipeline_steps_shallow.step_train
+    deps:
+    - pipeline_steps_shallow/step_train.py
+    - output/train_processed.csv
+    - output/test_processed.csv
+    params:
+    - prepare_data.var_target
+    - prepare_data.vars_cat
+    - prepare_data.vars_num
+    outs:
+    - output/submission.csv

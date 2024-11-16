@@ -5,7 +5,7 @@ import pandas as pd
 import xgboost as xgb
 from sklearn.metrics import cohen_kappa_score
 import yaml
-from step_prepare_data import StepPrepareData
+from pipeline_steps_shallow.step_prepare_data import StepPrepareData
 
 
 class StepTrain:
