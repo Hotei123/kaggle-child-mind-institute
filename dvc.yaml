@@ -27,7 +27,7 @@ stages:
 
 
   prepare_data_deep:
-    cmd: python -m pipeline_deep.write_tfrecords
+    cmd: python -m pipeline_deep.stage_write_tfrecords
     deps:
     - pipeline_deep/stage_write_tfrecords.py
     - data/child-mind-institute-problematic-internet-use/train.csv
