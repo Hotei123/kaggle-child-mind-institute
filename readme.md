@@ -7,7 +7,7 @@ My first solution consisted of copying what most of the public solutions did: me
 
 In order to better use the time series data, I wrote all the data into TFRecords using multi-threading, and trained a Keras model with it.
 
-TODO: describe how to run the shallow and deep solutions
+TODO: keep unique params.yaml (delete config_kaggle.json), and read the path parameters according to the instance where the code is running (local or Kaggle notebook).
 TODO: finish the TFRecord writing and training
 
 ### DVC Pipelines
