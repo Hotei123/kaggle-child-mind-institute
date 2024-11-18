@@ -1,3 +1,4 @@
+import tensorflow as tf
 import yaml
 from pipeline_deep.data_preparation.tfrecord_manager_child_mind import TFRecordManagerChildMind
 from tensorflow.keras import layers, models, Input
@@ -22,18 +23,40 @@ def get_model(config):
     return model
 
 
+def hash_element(tensor, num_buckets=1000000):
+    """
+    Hash an entire tensor into a single float value.
+
+    Args:
+        tensor: A tensor to hash (can be scalar or multi-dimensional).
+        num_buckets: Number of hash buckets.
+
+    Returns:
+        A float representing the hash of the entire tensor.
+    """
+    # Flatten the tensor and convert elements to strings
+    flattened_tensor = tf.strings.as_string(tf.reshape(tensor, [-1]))
+    # Join all elements into a single string
+    combined_string = tf.strings.reduce_join(flattened_tensor, separator=",")
+    # Hash the combined string and cast to float
+    hashed_value = tf.strings.to_hash_bucket_fast(combined_string, num_buckets=num_buckets) / num_buckets
+    return tf.cast(hashed_value, tf.float32)
+
+
 def train():
     with open('params.yaml', 'r') as f:
         config = yaml.safe_load(f)
 
     tfrec_man = TFRecordManagerChildMind(config)
-    dataset = tfrec_man.get_tfrecord_dataset('output/tfrecords/train_*', 6, 100, 8, 1, (lambda x: True))
+    dataset_train = tfrec_man.get_tfrecord_dataset('output/tfrecords/train_*', 6, 100, 8, 1, (lambda x, y: hash_element(x[0]) < 0.9))
+    dataset_val = tfrec_man.get_tfrecord_dataset('output/tfrecords/train_*', 6, 100, 8, 1, (lambda x, y: hash_element(x[0]) >= 0.9))
 
     model = get_model(config)
-    model.fit(dataset)
+    model.fit(dataset_train)
 
-    preds = model.predict(dataset)
-    print(preds)    
+    preds_train = model.predict(dataset_train)
+    preds_val = model.predict(dataset_val)
+    print(preds_train)    
 
 
 if __name__ == '__main__':

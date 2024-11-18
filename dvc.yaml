@@ -32,6 +32,8 @@ stages:
     cmd: python -m pipeline_deep.stage_write_tfrecords
     deps:
     - pipeline_deep/stage_write_tfrecords.py
+    - pipeline_deep/data_preparation/tfrecord_manager.py
+    - pipeline_deep/data_preparation/tfrecord_manager_child_mind.py
     - data/child-mind-institute-problematic-internet-use/train.csv
     - data/child-mind-institute-problematic-internet-use/test.csv
     - data/child-mind-institute-problematic-internet-use/series_train.parquet

@@ -95,8 +95,8 @@ class TFRecordManager:
                 print(filename)
             raw_dataset = tf.data.TFRecordDataset(files)
 
-        raw_dataset = raw_dataset.filter(function_filter)
         parsed_dataset = raw_dataset.map(self.parse_example, num_parallel_calls=num_parallel_calls)
+        parsed_dataset = parsed_dataset.filter(function_filter)
 
         if 'train' in file_pattern:
             parsed_dataset = parsed_dataset.shuffle(shuffle_buffer_size)
