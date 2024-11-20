@@ -67,7 +67,8 @@ class TFRecordManager:
                              batch_size: int, 
                              size_prefetch: int,
                              function_filter: callable,
-                             cycle_length=6,  # Number of files to read in parallel
+                             shuffle: bool,
+                             cycle_length=6,  # Number of files to read in parallel. TODO: choose this number according to host (local or remote)
                              ) -> tf.data.Dataset:
         """
         Args:
@@ -82,7 +83,7 @@ class TFRecordManager:
             - Dataset: a `Dataset`.
         """
 
-        if 'train' in file_pattern:
+        if shuffle:
             files = tf.data.Dataset.list_files(file_pattern, shuffle=True)
             raw_dataset = files.interleave(
                 tf.data.TFRecordDataset,
@@ -91,14 +92,12 @@ class TFRecordManager:
             )
         else:
             files = tf.data.Dataset.list_files(file_pattern, shuffle=False)
-            for filename in files:
-                print(filename)
             raw_dataset = tf.data.TFRecordDataset(files)
 
         parsed_dataset = raw_dataset.map(self.parse_example, num_parallel_calls=num_parallel_calls)
         parsed_dataset = parsed_dataset.filter(function_filter)
 
-        if 'train' in file_pattern:
+        if shuffle:
             parsed_dataset = parsed_dataset.shuffle(shuffle_buffer_size)
 
         parsed_dataset = parsed_dataset.batch(batch_size).prefetch(size_prefetch)
