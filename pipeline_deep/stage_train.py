@@ -1,7 +1,9 @@
+import numpy as np
 import tensorflow as tf
 import yaml
 from pipeline_deep.data_preparation.tfrecord_manager_child_mind import TFRecordManagerChildMind
 from tensorflow.keras import layers, models, Input
+from sklearn.metrics import cohen_kappa_score
 
 
 def get_model(config):
@@ -42,10 +44,11 @@ def train():
     model = get_model(config)
     model.fit(dataset_train)
 
-    preds_train = model.predict(dataset_train)
-    preds_val = model.predict(dataset_val)
-    print(preds_train)    
-
+    y_pred_val = np.argmax(model.predict(dataset_val), axis=1)  
+    y_val = np.empty((0,))
+    for x, y in dataset_val:
+        y_val = np.hstack([y_val, y.numpy()])
+    print(f"Metric in validation: {cohen_kappa_score(y_pred_val, y_val, weights='quadratic')}")
 
 if __name__ == '__main__':
 
