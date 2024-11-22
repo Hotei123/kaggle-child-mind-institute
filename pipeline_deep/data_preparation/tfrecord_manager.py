@@ -84,14 +84,14 @@ class TFRecordManager:
         """
 
         if shuffle:
-            files = tf.data.Dataset.list_files(file_pattern, shuffle=True)
+            files = tf.data.Dataset.list_files(str(self.path_output.joinpath(file_pattern)), shuffle=True)
             raw_dataset = files.interleave(
                 tf.data.TFRecordDataset,
                 cycle_length = cycle_length,
                 num_parallel_calls=num_parallel_calls
             )
         else:
-            files = tf.data.Dataset.list_files(file_pattern, shuffle=False)
+            files = tf.data.Dataset.list_files(str(self.path_output.joinpath(file_pattern)), shuffle=False)
             raw_dataset = tf.data.TFRecordDataset(files)
 
         parsed_dataset = raw_dataset.map(self.parse_example, num_parallel_calls=num_parallel_calls)

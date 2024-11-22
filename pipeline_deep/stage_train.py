@@ -45,14 +45,11 @@ def train():
     for fold_count in range(n_folds):
         print(f'Fold {fold_count}.')
         tfrec_man = TFRecordManagerChildMind(config)
-        # TODO: use variables for paths
         # TODO: check batch size, and the rest of parameters for writing and reading TFRecords
-        dataset_train = tfrec_man.get_tfrecord_dataset('output/tfrecords/train_*', 
-                                                       6, 100, 8, 1, 
+        dataset_train = tfrec_man.get_tfrecord_dataset('train_*', 6, 100, 8, 1, 
                                                        lambda x, y: fold_count * delta >= hash_element(x[0]) or hash_element(x[0]) >= (fold_count + 1) * delta, 
                                                        True)
-        dataset_val = tfrec_man.get_tfrecord_dataset('output/tfrecords/train_*', 
-                                                     6, 100, 8, 1, 
+        dataset_val = tfrec_man.get_tfrecord_dataset('train_*', 6, 100, 8, 1, 
                                                      lambda x, y: fold_count * delta < hash_element(x[0]) and hash_element(x[0]) < (fold_count + 1) * delta, 
                                                      False)
         model = get_model(config)
@@ -67,15 +64,9 @@ def train():
 
     # Training in whole dataset for submission
     tfrec_man = TFRecordManagerChildMind(config)
-    # TODO: use variables for paths
-    dataset_train_full = tfrec_man.get_tfrecord_dataset('output/tfrecords/train_*', 
-                                                        6, 100, 8, 1, 
-                                                        lambda x, y: True, 
-                                                        True)
-    dataset_submission = tfrec_man.get_tfrecord_dataset('output/tfrecords/submit_*', 
-                                                        6, 100, 8, 1, 
-                                                        lambda x, y: True, 
-                                                        False)
+    # TODO: check batch size, and the rest of parameters for writing and reading TFRecords
+    dataset_train_full = tfrec_man.get_tfrecord_dataset('train_*', 6, 100, 8, 1, lambda x, y: True, True)
+    dataset_submission = tfrec_man.get_tfrecord_dataset('submit_*', 6, 100, 8, 1, lambda x, y: True, False)
     model = get_model(config)
     model.fit(dataset_train_full)
     y_pred_full = np.argmax(model.predict(dataset_submission), axis=1)
