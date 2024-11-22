@@ -39,7 +39,7 @@ class StepTrain:
 
         n_folds: int = 10
         fold_size: int = int(data_train_x.shape[0] / n_folds)
-        metrics: List[float] = []
+        metrics_cv: List[float] = []
         print(f'Data shape: {data_train_x.shape}')
         for fold in range(n_folds):
             print(f'Fold {fold}.')
@@ -51,9 +51,9 @@ class StepTrain:
             data_test_y_fold = data_train_y.iloc[fold_size * fold: fold_size * (fold + 1)]
             model.fit(data_train_x_fold, data_train_y_fold)
             y_pred_fold = model.predict(data_test_x_fold)
-            metrics.append(cohen_kappa_score(data_test_y_fold, y_pred_fold, weights='quadratic'))
+            metrics_cv.append(cohen_kappa_score(data_test_y_fold, y_pred_fold, weights='quadratic'))
 
-        print(f'CV metrics: {[np.round(m, 3) for m in metrics]}.\nMean metric: {np.mean(metrics): .3f}.')
+        print(f'CV metrics shallow: {[np.round(m, 3) for m in metrics_cv]}.\nMean metric: {np.mean(metrics_cv): .3f}.')
 
         # Training in whole training data
         model.fit(data_train_x, data_train_y)
