@@ -36,11 +36,18 @@ def train():
     with open('params.yaml', 'r') as f:
         config = yaml.safe_load(f)
 
+    n_folds = 10
+    delta = 1 / n_folds
+    fold_count = 1
     tfrec_man = TFRecordManagerChildMind(config)
     dataset_train = tfrec_man.get_tfrecord_dataset('output/tfrecords/train_*', 
-                                                   6, 100, 8, 1, (lambda x, y: hash_element(x[0]) < 0.9), True)
+                                                   6, 100, 8, 1, 
+                                                   lambda x, y: fold_count * delta >= hash_element(x[0]) or hash_element(x[0]) >= (fold_count + 1) * delta, 
+                                                   True)
     dataset_val = tfrec_man.get_tfrecord_dataset('output/tfrecords/train_*', 
-                                                 6, 100, 8, 1, (lambda x, y: hash_element(x[0]) >= 0.9), False)
+                                                 6, 100, 8, 1, 
+                                                 lambda x, y: fold_count * delta < hash_element(x[0]) or hash_element(x[0]) < (fold_count + 1) * delta, 
+                                                 False)
     model = get_model(config)
     model.fit(dataset_train)
 
