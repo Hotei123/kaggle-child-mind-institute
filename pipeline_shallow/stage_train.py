@@ -14,10 +14,6 @@ class StepTrain:
         self.config: Dict[str, Any] = config
         self.step_prepare_data = StepPrepareData(config)
 
-    @staticmethod
-    def kappa_scorer(y_true, y_pred):
-        return cohen_kappa_score(y_true, y_pred, weights='quadratic')
-
     def train(self):
         path_output: str = self.config['prepare_data']['path_output']
         path_train_processed: str = os.path.join(path_output, 'train_processed.csv')
@@ -55,7 +51,7 @@ class StepTrain:
             data_test_y_fold = data_train_y.iloc[fold_size * fold: fold_size * (fold + 1)]
             model.fit(data_train_x_fold, data_train_y_fold)
             y_pred_fold = model.predict(data_test_x_fold)
-            metrics.append(self.kappa_scorer(data_test_y_fold, y_pred_fold))
+            metrics.append(cohen_kappa_score(data_test_y_fold, y_pred_fold, weights='quadratic'))
 
         print(f'CV metrics: {[np.round(m, 3) for m in metrics]}.\nMean metric: {np.mean(metrics): .3f}.')
 
@@ -64,7 +60,7 @@ class StepTrain:
         y_pred_train = model.predict(data_train_x)
         y_pred_test = model.predict(data_test_x)
 
-        print(f'Metric in full training data: {self.kappa_scorer(data_train_y.values, y_pred_train): .3f}.')
+        print(f'Metric in full training data: {cohen_kappa_score(data_train_y.values, y_pred_train, weights="quadratic"): .3f}.')
 
         submission = pd.DataFrame({'id': data_test_raw['id'], self.step_prepare_data.var_target: y_pred_test})
         submission.to_csv(os.path.join(path_output, 'submission.csv'), index=False)
