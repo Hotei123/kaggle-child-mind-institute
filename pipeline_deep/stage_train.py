@@ -41,6 +41,7 @@ def train():
     fold_count = 1
     metrics_cv = []
     for fold_count in range(n_folds):
+        print(f'Fold {fold_count}.')
         tfrec_man = TFRecordManagerChildMind(config)
         dataset_train = tfrec_man.get_tfrecord_dataset('output/tfrecords/train_*', 
                                                     6, 100, 8, 1, 
@@ -59,6 +60,7 @@ def train():
             y_val = np.hstack([y_val, y.numpy()])
         metrics_cv.append(cohen_kappa_score(y_pred_val, y_val, weights='quadratic'))
     print(f'CV metrics deep: {[np.round(m, 3) for m in metrics_cv]}.\nMean metric: {np.mean(metrics_cv): .3f}.')
+
 
 if __name__ == '__main__':
 

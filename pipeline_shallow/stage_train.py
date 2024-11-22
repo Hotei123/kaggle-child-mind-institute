@@ -41,14 +41,14 @@ class StepTrain:
         fold_size: int = int(data_train_x.shape[0] / n_folds)
         metrics_cv: List[float] = []
         print(f'Data shape: {data_train_x.shape}')
-        for fold in range(n_folds):
-            print(f'Fold {fold}.')
-            data_train_x_fold = pd.concat([data_train_x.iloc[:fold_size * fold, :], 
-                                           data_train_x.iloc[fold_size * (fold + 1):, :]])
-            data_train_y_fold = pd.concat([data_train_y.iloc[:fold_size * fold], 
-                                           data_train_y.iloc[fold_size * (fold + 1):]])
-            data_test_x_fold = data_train_x.iloc[fold_size * fold: fold_size * (fold + 1), :]
-            data_test_y_fold = data_train_y.iloc[fold_size * fold: fold_size * (fold + 1)]
+        for fold_count in range(n_folds):
+            print(f'Fold {fold_count}.')
+            data_train_x_fold = pd.concat([data_train_x.iloc[:fold_size * fold_count, :], 
+                                           data_train_x.iloc[fold_size * (fold_count + 1):, :]])
+            data_train_y_fold = pd.concat([data_train_y.iloc[:fold_size * fold_count], 
+                                           data_train_y.iloc[fold_size * (fold_count + 1):]])
+            data_test_x_fold = data_train_x.iloc[fold_size * fold_count: fold_size * (fold_count + 1), :]
+            data_test_y_fold = data_train_y.iloc[fold_size * fold_count: fold_size * (fold_count + 1)]
             model.fit(data_train_x_fold, data_train_y_fold)
             y_pred_fold = model.predict(data_test_x_fold)
             metrics_cv.append(cohen_kappa_score(data_test_y_fold, y_pred_fold, weights='quadratic'))
