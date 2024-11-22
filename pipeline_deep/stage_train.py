@@ -46,6 +46,7 @@ def train():
         print(f'Fold {fold_count}.')
         tfrec_man = TFRecordManagerChildMind(config)
         # TODO: use variables for paths
+        # TODO: check batch size, and the rest of parameters for writing and reading TFRecords
         dataset_train = tfrec_man.get_tfrecord_dataset('output/tfrecords/train_*', 
                                                        6, 100, 8, 1, 
                                                        lambda x, y: fold_count * delta >= hash_element(x[0]) or hash_element(x[0]) >= (fold_count + 1) * delta, 
