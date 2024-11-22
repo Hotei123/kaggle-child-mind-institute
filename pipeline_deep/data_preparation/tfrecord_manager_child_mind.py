@@ -10,13 +10,13 @@ class TFRecordManagerChildMind(TFRecordManager):
     def __init__(self, config):
         # TODO: avoid overriding the constructor
         path_non_temporal_train = config['prepare_data']['path_tabular_train']
-        path_non_temporal_submit = config['prepare_data']['path_tabular_test']
+        self.path_non_temporal_submit = config['prepare_data']['path_tabular_test']
         # Train data
         self.data_non_temp_train: pd.DataFrame = pd.read_csv(path_non_temporal_train)
         self.n_examples_train: int = self.data_non_temp_train.shape[0]
         self.n_examples_per_file_train: int = config['prepare_data']['n_examples_per_file_train']
         # Submit data
-        self.data_non_temp_submit: pd.DataFrame = pd.read_csv(path_non_temporal_submit)
+        self.data_non_temp_submit: pd.DataFrame = pd.read_csv(self.path_non_temporal_submit)
         self.n_examples_submit: int = self.data_non_temp_submit.shape[0]
         self.n_examples_per_file_submit: int = config['prepare_data']['n_examples_per_file_submit']
 
@@ -24,6 +24,7 @@ class TFRecordManagerChildMind(TFRecordManager):
         self.feature_description = {var_name: tf.io.FixedLenFeature([], tf.float32) for var_name in config['prepare_data']['vars_num']}
         self.feature_description['sii'] = tf.io.FixedLenFeature([], tf.float32)
         self.vars_num = config['prepare_data']['vars_num']
+        self.var_target = config['prepare_data']['var_target']
     def get_example(self, index: int, prefix: str) -> tf.train.Example:
         # This function returns an example from the raw data.
         if prefix == 'train':

@@ -1,4 +1,6 @@
+import pathlib
 import numpy as np
+import pandas as pd
 import tensorflow as tf
 import yaml
 from pipeline_deep.data_preparation.tfrecord_manager_child_mind import TFRecordManagerChildMind
@@ -43,14 +45,15 @@ def train():
     for fold_count in range(n_folds):
         print(f'Fold {fold_count}.')
         tfrec_man = TFRecordManagerChildMind(config)
+        # TODO: use variables for paths
         dataset_train = tfrec_man.get_tfrecord_dataset('output/tfrecords/train_*', 
-                                                    6, 100, 8, 1, 
-                                                    lambda x, y: fold_count * delta >= hash_element(x[0]) or hash_element(x[0]) >= (fold_count + 1) * delta, 
-                                                    True)
+                                                       6, 100, 8, 1, 
+                                                       lambda x, y: fold_count * delta >= hash_element(x[0]) or hash_element(x[0]) >= (fold_count + 1) * delta, 
+                                                       True)
         dataset_val = tfrec_man.get_tfrecord_dataset('output/tfrecords/train_*', 
-                                                    6, 100, 8, 1, 
-                                                    lambda x, y: fold_count * delta < hash_element(x[0]) and hash_element(x[0]) < (fold_count + 1) * delta, 
-                                                    False)
+                                                     6, 100, 8, 1, 
+                                                     lambda x, y: fold_count * delta < hash_element(x[0]) and hash_element(x[0]) < (fold_count + 1) * delta, 
+                                                     False)
         model = get_model(config)
         model.fit(dataset_train)
 
@@ -61,10 +64,29 @@ def train():
         metrics_cv.append(cohen_kappa_score(y_pred_val, y_val, weights='quadratic'))
     print(f'CV metrics deep: {[np.round(m, 3) for m in metrics_cv]}.\nMean metric: {np.mean(metrics_cv): .3f}.')
 
+    # Training in whole dataset for submission
+    tfrec_man = TFRecordManagerChildMind(config)
+    # TODO: use variables for paths
+    dataset_train_full = tfrec_man.get_tfrecord_dataset('output/tfrecords/train_*', 
+                                                        6, 100, 8, 1, 
+                                                        lambda x, y: True, 
+                                                        True)
+    dataset_submission = tfrec_man.get_tfrecord_dataset('output/tfrecords/submit_*', 
+                                                        6, 100, 8, 1, 
+                                                        lambda x, y: True, 
+                                                        False)
+    model = get_model(config)
+    model.fit(dataset_train_full)
+    y_pred_full = np.argmax(model.predict(dataset_submission), axis=1)
+
+    data_test_raw = pd.read_csv(tfrec_man.path_non_temporal_submit)
+    submission = pd.DataFrame({'id': data_test_raw['id'], tfrec_man.var_target: y_pred_full})
+    submission.to_csv(pathlib.Path(tfrec_man.path_output).joinpath('submission.csv'), index=False)
+
 
 if __name__ == '__main__':
 
-    # TODO: calcualate metric
+    # TODO: submit in Kaggle and compare with local metric
     # TODO: normalize data
     # TODO: add missing labels with algorithm trained in labeled data
     # TODO: add time series data
