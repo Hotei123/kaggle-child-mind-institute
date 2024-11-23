@@ -5,7 +5,9 @@ from pipeline_deep.stage_train import train
 
 if __name__ == '__main__':
 
-    train()
+    with open('params.yaml', 'r') as f:
+        config = yaml.safe_load(f)
+    print(config)
 
 # TODO: Use the full time series with tensorflow data.Dataset.from_generator
 # TODO: Normalize the time series, possibly eliminating columns

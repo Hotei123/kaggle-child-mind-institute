@@ -71,7 +71,7 @@ def train(config):
 
     data_test_raw = pd.read_csv(tfrec_man.path_non_temporal_submit)
     submission = pd.DataFrame({'id': data_test_raw['id'], tfrec_man.var_target: y_pred_full})
-    submission.to_csv(pathlib.Path(tfrec_man.path_output).joinpath('submission.csv'), index=False)
+    submission.to_csv(pathlib.Path(tfrec_man.path_output).parent.joinpath('submission.csv'), index=False)
 
 
 if __name__ == '__main__':
