@@ -34,9 +34,7 @@ def hash_element(tensor, num_buckets=100000000):
     return tf.cast(hashed_value, tf.float32)
 
 
-def train():
-    with open('params.yaml', 'r') as f:
-        config = yaml.safe_load(f)
+def train(config):
 
     n_folds = 10
     delta = 1 / n_folds
@@ -84,4 +82,7 @@ if __name__ == '__main__':
     # TODO: add time series data
     # TODO: revise dataset parameters
 
-    train()
+    with open('params.yaml', 'r') as f:
+        config = yaml.safe_load(f)
+
+    train(config)

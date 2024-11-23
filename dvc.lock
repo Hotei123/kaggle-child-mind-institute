@@ -204,9 +204,9 @@ stages:
     cmd: python -m pipeline_deep.stage_train
     deps:
     - path: output/tfrecords/
-      md5: 5108463c8bdb83ba5fdb02817fb201a4.dir
+      md5: 308502e17ea164557cc01b9b7a667ed1.dir
       size: 5767245
       nfiles: 399
     - path: pipeline_deep/stage_train.py
-      md5: b2377ac95efc48a4d0cfd411729fba08
-      size: 3927
+      md5: 6624211f1c97819862e0997273206a6d
+      size: 3864
