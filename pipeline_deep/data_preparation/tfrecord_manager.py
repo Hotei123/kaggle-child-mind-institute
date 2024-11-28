@@ -39,8 +39,7 @@ class TFRecordManager:
 
     def write_tfrecords(self):
 
-        if os.path.exists(self.path_output):
-            shutil.rmtree(self.path_output)
+        shutil.rmtree(self.path_output, ignore_errors=True)
         os.makedirs(self.path_output)
 
         for prefix, n_examples, n_examples_per_file in [('train', self.n_examples_train, self.n_examples_per_file_train),
