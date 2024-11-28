@@ -36,6 +36,9 @@ def hash_element(tensor, num_buckets=100000000):
 
 def train(config):
 
+    # Labeling missing data
+
+    # Cross-validation
     n_folds = 10
     delta = 1 / n_folds
     fold_count = 1
@@ -76,7 +79,6 @@ def train(config):
 
 if __name__ == '__main__':
 
-    # TODO: submit in Kaggle and compare with local metric
     # TODO: normalize data
     # TODO: add missing labels with algorithm trained in labeled data
     # TODO: add time series data
