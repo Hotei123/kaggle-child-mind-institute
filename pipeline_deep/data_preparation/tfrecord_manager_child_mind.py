@@ -25,6 +25,7 @@ class TFRecordManagerChildMind(TFRecordManager):
         self.feature_description['sii'] = tf.io.FixedLenFeature([], tf.float32)
         self.vars_num = config['prepare_data']['vars_num']
         self.var_target = config['prepare_data']['var_target']
+
     def get_example(self, index: int, prefix: str) -> tf.train.Example:
         # This function returns an example from the raw data.
         if prefix == 'train':
@@ -47,7 +48,6 @@ class TFRecordManagerChildMind(TFRecordManager):
 
     def parse_example(self, example: tf.train.Example):
         # Returns the parsed data from the input `tf.train.Example` proto.
-        # TODO: use all vars in vars_num
         # TODO: normalize training
         # TODO: add time series data (first from describe.(), and then the whole series)
         # TODO: make predictions of missing target vars
