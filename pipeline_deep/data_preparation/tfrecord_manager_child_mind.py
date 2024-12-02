@@ -62,4 +62,4 @@ class TFRecordManagerChildMind(TFRecordManager):
     
     @staticmethod
     def normalization_function(dataset):
-        return lambda x, y: x
+        return lambda x, y: (x, y)
