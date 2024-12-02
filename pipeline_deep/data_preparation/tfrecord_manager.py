@@ -103,7 +103,8 @@ class TFRecordManager:
         try:
             parsed_dataset = parsed_dataset.map(self.normalization_func)
         except:
-            raise Exception('Normalization function is not defined.')
+            raise Exception('Normalization function is not defined. Check parameter calculate_normalization_params'
+                             'when calling method get_tfrecord_dataset.')
 
         if shuffle:
             parsed_dataset = parsed_dataset.shuffle(shuffle_buffer_size)
