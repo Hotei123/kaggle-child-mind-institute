@@ -49,14 +49,10 @@ def train(config):
         # TODO: check batch size, and the rest of parameters for writing and reading TFRecords
         dataset_train = tfrec_man.get_tfrecord_dataset('train_*', 6, 100, 8, 1, 
                                                        lambda x, y: fold_count * delta >= hash_element(x[0]) or hash_element(x[0]) >= (fold_count + 1) * delta, 
-                                                       True)
-        norm_func = tfrec_man.normalization_function(dataset_train)
-        dataset_train = dataset_train.map(norm_func)
+                                                       True, True)
         dataset_val = tfrec_man.get_tfrecord_dataset('train_*', 6, 100, 8, 1, 
                                                      lambda x, y: fold_count * delta < hash_element(x[0]) and hash_element(x[0]) < (fold_count + 1) * delta, 
-                                                     False)
-        dataset_val = dataset_val.map(norm_func)
-        
+                                                     False, False)        
         model = get_model(config)
         model.fit(dataset_train)
 
@@ -70,11 +66,8 @@ def train(config):
     # Training in whole dataset for submission
     tfrec_man = TFRecordManagerChildMind(config)
     # TODO: check batch size, and the rest of parameters for writing and reading TFRecords
-    dataset_train_full = tfrec_man.get_tfrecord_dataset('train_*', 6, 100, 8, 1, lambda x, y: True, True)
-    norm_func = tfrec_man.normalization_function(dataset_train_full)
-    dataset_train_full = dataset_train_full.map(norm_func)
-    dataset_submission = tfrec_man.get_tfrecord_dataset('submit_*', 6, 100, 8, 1, lambda x, y: True, False)
-    dataset_submission = dataset_submission.map(norm_func)
+    dataset_train_full = tfrec_man.get_tfrecord_dataset('train_*', 6, 100, 8, 1, lambda x, y: True, True, True)
+    dataset_submission = tfrec_man.get_tfrecord_dataset('submit_*', 6, 100, 8, 1, lambda x, y: True, False, False)
 
     model = get_model(config)
     model.fit(dataset_train_full)

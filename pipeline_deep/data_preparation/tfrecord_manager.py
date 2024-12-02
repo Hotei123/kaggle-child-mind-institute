@@ -16,6 +16,7 @@ class TFRecordManager:
         self.n_examples_submit: int = n_examples_submit
         self.n_examples_per_file_submit: int = n_examples_per_file_submit
         self.path_output: str = path_output
+        self.normalization_func = None
 
     @staticmethod
     def _bytes_feature(value):
@@ -67,6 +68,7 @@ class TFRecordManager:
                              size_prefetch: int,
                              function_filter: callable,
                              shuffle: bool,
+                             calculate_normalization_params: bool,
                              cycle_length=6,  # Number of files to read in parallel. TODO: choose this number according to host (local or remote)
                              ) -> tf.data.Dataset:
         """
@@ -95,6 +97,13 @@ class TFRecordManager:
 
         parsed_dataset = raw_dataset.map(self.parse_example, num_parallel_calls=num_parallel_calls)
         parsed_dataset = parsed_dataset.filter(function_filter)
+
+        if calculate_normalization_params:
+            self.normalization_func = self.normalization_function(parsed_dataset)
+        try:
+            parsed_dataset = parsed_dataset.map(self.normalization_func)
+        except:
+            raise Exception('Normalization function is not defined.')
 
         if shuffle:
             parsed_dataset = parsed_dataset.shuffle(shuffle_buffer_size)
