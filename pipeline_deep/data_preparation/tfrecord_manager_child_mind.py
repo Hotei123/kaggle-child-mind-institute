@@ -63,7 +63,6 @@ class TFRecordManagerChildMind(TFRecordManager):
     @staticmethod
     def normalization_function(dataset):
 
-        # import numpy as np
         # maximums = []
         # for (x_1, x_2), y in dataset:
         #     maximums.append(np.max(x_1))
