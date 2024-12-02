@@ -102,3 +102,7 @@ class TFRecordManager:
         parsed_dataset = parsed_dataset.batch(batch_size).prefetch(size_prefetch)
 
         return parsed_dataset
+    
+    @staticmethod
+    def normalization_function(dataset):
+        pass

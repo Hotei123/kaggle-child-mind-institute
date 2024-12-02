@@ -59,3 +59,7 @@ class TFRecordManagerChildMind(TFRecordManager):
         x1 = tf.where(tf.math.is_nan(x1), 0.0, x1)
         x2 = tf.where(tf.math.is_nan(x2), 0.0, x2)
         return (x1, x2), example_parsed['sii']
+    
+    @staticmethod
+    def normalization_function(dataset):
+        return lambda x, y: x
