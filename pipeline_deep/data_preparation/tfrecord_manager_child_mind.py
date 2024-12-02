@@ -65,9 +65,9 @@ class TFRecordManagerChildMind(TFRecordManager):
 
         # import numpy as np
         # maximums = []
-        # for x, y in parsed_dataset:
-        #     maximums.append(np.max(x[0]))
+        # for (x_1, x_2), y in dataset:
+        #     maximums.append(np.max(x_1))
         # maximums = sorted(maximums)
         # print([maximums[0], maximums[100], maximums[1000], maximums[-5], maximums[-1]])
 
-        return lambda x, y: (x, y)
+        return lambda x, y: ((x[0], x[1]), y)
