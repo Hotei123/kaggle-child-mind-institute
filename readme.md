@@ -57,3 +57,13 @@ CV metrics: [0.42, 0.411, 0.485, 0.49, 0.442, 0.318, 0.493, 0.499, 0.414, 0.409]
 
 - CV metrics deep: [0.264, 0.271, 0.249, 0.29, 0.222, 0.103, 0.225, 0.215, 0.314, 0.033].
 Mean metric:  0.219.
+
+- After normalizing: 0.348, 0.093, 0.366, 0.391, 0.284, 0.148, 0.332, 0.232, 0.14, 0.337.
+Mean metric: 0.2671
+
+### Some comments on normalization
+
+The reason behind normalizing the tf.data.Dataset during training time and not during writing the TFRecords, is
+because the subset with respect the normalization is taken changes, because it can be a fold in the cross-validation,
+or can be the full training set for training for the final submission. That's why I preferred a little of overhead
+in favour of writing code easier.

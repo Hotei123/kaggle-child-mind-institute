@@ -63,10 +63,14 @@ class TFRecordManagerChildMind(TFRecordManager):
     @staticmethod
     def normalization_function(dataset):
 
-        # maximums = []
-        # for (x_1, x_2), y in dataset:
-        #     maximums.append(np.max(x_1))
-        # maximums = sorted(maximums)
-        # print([maximums[0], maximums[100], maximums[1000], maximums[-5], maximums[-1]])
+        x_0_max = None
+        x_1_max = None
+        for (x_0, x_1), y in dataset:
+            if x_0_max is None:
+                x_0_max = x_0
+                x_1_max = x_1
+            else:
+                x_0_max = np.max([x_0_max, x_0], axis=0)
+                x_1_max = np.max([x_1_max, x_1], axis=0)
 
-        return lambda x, y: ((x[0], x[1]), y)
+        return lambda x, y: ((x[0] / x_0_max, x[1] / x_1_max), y)
