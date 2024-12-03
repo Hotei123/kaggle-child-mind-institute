@@ -65,12 +65,20 @@ class TFRecordManagerChildMind(TFRecordManager):
 
         x_0_max = None
         x_1_max = None
+        x_0_min = None
+        x_1_min = None
         for (x_0, x_1), y in dataset:
             if x_0_max is None:
                 x_0_max = x_0
                 x_1_max = x_1
+                x_0_min = x_0
+                x_1_min = x_1
             else:
                 x_0_max = np.max([x_0_max, x_0], axis=0)
                 x_1_max = np.max([x_1_max, x_1], axis=0)
+                x_0_min = np.min([x_0_min, x_0], axis=0)
+                x_1_min = np.min([x_1_min, x_1], axis=0)
 
-        return lambda x, y: ((x[0] / x_0_max, x[1] / x_1_max), y)
+        diff_0 = x_0_max - x_0_min
+        diff_1 = x_1_max - x_1_min
+        return lambda x, y: (((x[0] - x_0_min) / diff_0, (x[1] - x_1_min) / diff_1), y)
