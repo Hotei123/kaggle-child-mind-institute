@@ -59,7 +59,10 @@ CV metrics: [0.42, 0.411, 0.485, 0.49, 0.442, 0.318, 0.493, 0.499, 0.414, 0.409]
 Mean metric:  0.219.
 
 - After normalizing: [-0.005, 0.252, 0.265, 0.101, 0.345, 0.222, 0.368, 0.217, 0.015, 0.276].
-Mean metric: 0.2056
+Mean metric: 0.2056.
+
+- After using filled NaNs labels: [0.151, 0.186, 0.252, 0.269, 0.265, 0.364, 0.351, 0.265, 0.248, 0.32].
+Mean metric:  0.267.
 
 ### Some comments on normalization
 

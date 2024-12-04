@@ -193,21 +193,21 @@ stages:
       md5: a471ce367ddb40e2aa22047727506286
       size: 5493
     - path: pipeline_deep/data_preparation/tfrecord_manager_child_mind.py
-      md5: 921bf3ce3056c16b6c843a36cd0c6576
-      size: 4090
+      md5: 1c5afdc4e82452347423201fcbec3b24
+      size: 4352
     - path: pipeline_deep/stage_write_tfrecords.py
       md5: 5e664908fc5dc168c261a95512312b70
       size: 295
     outs:
     - path: output/tfrecords/
-      md5: 942f2dbb32ad0e0c738b93467742c013.dir
+      md5: 91b10940cb857122017301921e9e3881.dir
       size: 5767020
       nfiles: 398
   train_deep:
     cmd: python -m pipeline_deep.stage_train
     deps:
     - path: output/tfrecords/
-      md5: 942f2dbb32ad0e0c738b93467742c013.dir
+      md5: 91b10940cb857122017301921e9e3881.dir
       size: 5767020
       nfiles: 398
     - path: pipeline_deep/stage_train.py

@@ -13,6 +13,9 @@ class TFRecordManagerChildMind(TFRecordManager):
         self.path_non_temporal_submit = config['prepare_data']['path_tabular_test']
         # Train data
         self.data_non_temp_train: pd.DataFrame = pd.read_csv(path_non_temporal_train)
+        path_labels_train_filled = pathlib.Path(config['prepare_data']['path_output']).joinpath('labels_filled.csv')
+        labels_train_filled: pd.DataFrame = pd.read_csv(path_labels_train_filled)
+        self.data_non_temp_train.sii = labels_train_filled.sii
         self.n_examples_train: int = self.data_non_temp_train.shape[0]
         self.n_examples_per_file_train: int = config['prepare_data']['n_examples_per_file_train']
         # Submit data
