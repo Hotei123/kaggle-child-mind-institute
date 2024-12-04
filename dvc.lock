@@ -100,8 +100,8 @@ stages:
       md5: e19b0846283dd5d8529692ce1bb5794f
       size: 2503546
     - path: pipeline_shallow/stage_train.py
-      md5: 6286a667e8d82ee21e0ba8b163d72352
-      size: 3414
+      md5: 79f8744377e306223edf78ba35992d5a
+      size: 3570
     params:
       params.yaml:
         prepare_data.var_target: sii
@@ -166,6 +166,9 @@ stages:
         - SDS-SDS_Total_T
         - PreInt_EduHx-computerinternet_hoursday
     outs:
+    - path: output/labels_filled.csv
+      md5: 3e71fb8779ccd0acb3f5e9d78be09ef6
+      size: 15844
     - path: output/submission.csv
       md5: cdf5c9a13dd4310bb031c6fb63bc24cc
       size: 225

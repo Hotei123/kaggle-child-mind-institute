@@ -1,4 +1,5 @@
 import os
+import pathlib
 from typing import Any, Dict, List
 import numpy as np
 import pandas as pd
@@ -36,6 +37,7 @@ class StepTrain:
         model.fit(data_train_x_labeled, data_train_y[data_train_y.notna()])
         labels_nan_filled = model.predict(data_train_x_unlabeled)
         data_train_y.loc[data_train_y.isna()] = labels_nan_filled
+        data_train_y.to_frame().to_csv(pathlib.Path(self.config['prepare_data']['path_output']).joinpath('labels_filled.csv') , index=False)
 
         n_folds: int = 10
         fold_size: int = int(data_train_x.shape[0] / n_folds)

@@ -26,6 +26,7 @@ stages:
     - prepare_data.vars_num
     outs:
     - output/submission.csv
+    - output/labels_filled.csv
 
 
   prepare_data_deep:
