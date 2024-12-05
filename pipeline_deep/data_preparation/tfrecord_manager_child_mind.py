@@ -9,18 +9,20 @@ class TFRecordManagerChildMind(TFRecordManager):
 
     def __init__(self, config):
         # TODO: avoid overriding the constructor
-        path_non_temporal_train = config['prepare_data']['path_tabular_train']
-        self.path_non_temporal_submit = config['prepare_data']['path_tabular_test']
+        
         # Train data
-        self.data_non_temp_train: pd.DataFrame = pd.read_csv(path_non_temporal_train)
+        self.data_non_temp_train = pd.read_csv('output/train_processed.csv')
         # Filling NaN labels
         path_labels_train_filled = pathlib.Path(config['prepare_data']['path_output']).joinpath('labels_filled.csv')
         labels_train_filled: pd.DataFrame = pd.read_csv(path_labels_train_filled)
         self.data_non_temp_train.sii = labels_train_filled.sii
+        # Submit data
+        self.data_non_temp_submit = pd.read_csv('output/test_processed.csv')
+
+        self.path_non_temporal_submit = config['prepare_data']['path_tabular_test']
         
         self.n_examples_train: int = self.data_non_temp_train.shape[0]
         self.n_examples_per_file_train: int = config['prepare_data']['n_examples_per_file_train']
-        # Submit data
         self.data_non_temp_submit: pd.DataFrame = pd.read_csv(self.path_non_temporal_submit)
         self.n_examples_submit: int = self.data_non_temp_submit.shape[0]
         self.n_examples_per_file_submit: int = config['prepare_data']['n_examples_per_file_submit']
@@ -54,8 +56,8 @@ class TFRecordManagerChildMind(TFRecordManager):
     def parse_example(self, example: tf.train.Example):
         # Returns the parsed data from the input `tf.train.Example` proto.
         # TODO: normalize training
+        # TODO: add dummy variables
         # TODO: add time series data (first from describe.(), and then the whole series)
-        # TODO: make predictions of missing target vars
         example_parsed = tf.io.parse_single_example(example, self.feature_description)
         x1 = tf.stack([example_parsed[var] for var in self.vars_num], axis=0)
         x2 = tf.stack([example_parsed['Physical-BMI'], 

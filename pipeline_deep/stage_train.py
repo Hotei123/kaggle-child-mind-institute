@@ -81,7 +81,6 @@ def train(config):
 if __name__ == '__main__':
 
     # TODO: normalize data
-    # TODO: add missing labels with algorithm trained in labeled data
     # TODO: add time series data
     # TODO: revise dataset parameters
 
