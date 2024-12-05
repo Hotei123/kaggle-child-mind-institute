@@ -39,6 +39,7 @@ stages:
     - data/child-mind-institute-problematic-internet-use/test.csv
     - data/child-mind-institute-problematic-internet-use/series_train.parquet
     - data/child-mind-institute-problematic-internet-use/series_test.parquet
+    - output/labels_filled.csv
     outs:
     - output/tfrecords/
   train_deep:

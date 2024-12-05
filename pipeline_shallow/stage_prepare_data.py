@@ -56,11 +56,10 @@ class StepPrepareData:
             if data_series_row is not None:
                 data_series[row_count, :] = data_series_row
 
-                vars_series = [f'series_desc_{i}' for i in range(data_series.shape[1])]
-                data_series = pd.DataFrame(data_series, columns=vars_series)
-                data = pd.concat([data, data_series], axis=1)
-
-                return data
+        vars_series = [f'series_desc_{i}' for i in range(data_series.shape[1])]
+        data_series = pd.DataFrame(data_series, columns=vars_series)
+        data = pd.concat([data, data_series], axis=1)
+        return data
 
     def export_partitions(self):
         for path, is_train, partition_name in zip([self.path_tabular_train, self.path_tabular_test], 
