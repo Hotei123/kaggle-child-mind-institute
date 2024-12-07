@@ -22,6 +22,10 @@ class TFRecordManagerChildMind(TFRecordManager):
             if col not in self.data_non_temp_submit.columns:
                 self.data_non_temp_submit[col] = 0
 
+        for col in self.data_non_temp_submit.columns:
+            if col not in self.data_non_temp_train.columns:
+                self.data_non_temp_train[col] = 0
+
         self.path_non_temporal_submit = config['prepare_data']['path_tabular_test']
         
         self.n_examples_train: int = self.data_non_temp_train.shape[0]
