@@ -64,6 +64,9 @@ Mean metric: 0.2056.
 - After using filled NaNs labels: [0.151, 0.186, 0.252, 0.269, 0.265, 0.364, 0.351, 0.265, 0.248, 0.32].
 Mean metric:  0.267.
 
+After using dummy vars: [0.25, 0.195, 0.248, 0.475, 0.192, 0.4, 0.273, 0.235, 0.246, 0.151].
+Mean metric:  0.267.
+
 ### Some comments on normalization
 
 The reason behind normalizing the tf.data.Dataset during training time and not during writing the TFRecords, is
