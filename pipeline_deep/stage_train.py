@@ -70,7 +70,7 @@ def train(config, tfrecord_man: TFRecordManagerChildMind):
     dataset_train_full = tfrec_man.get_tfrecord_dataset('train_*', 6, 100, 8, 1, lambda x, y: True, True, True)
     dataset_submission = tfrec_man.get_tfrecord_dataset('submit_*', 6, 100, 8, 1, lambda x, y: True, False, False)
 
-    model = get_model(config)
+    model = get_model(config, len(tfrecord_man.vars_num), len(tfrecord_man.vars_dummy))
     model.fit(dataset_train_full)
     y_pred_full = np.argmax(model.predict(dataset_submission), axis=1)
 
@@ -88,4 +88,5 @@ if __name__ == '__main__':
     with open('params.yaml', 'r') as f:
         config = yaml.safe_load(f)
 
-    train(config)
+    tfrec_man = TFRecordManagerChildMind(config)
+    train(config, tfrec_man)

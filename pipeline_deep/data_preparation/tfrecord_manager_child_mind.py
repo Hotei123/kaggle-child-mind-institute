@@ -21,8 +21,6 @@ class TFRecordManagerChildMind(TFRecordManager):
         for col in self.data_non_temp_train.columns:
             if col not in self.data_non_temp_submit.columns:
                 self.data_non_temp_submit[col] = 0
-        # TODO: the submit data lacks some categories that are present in the train data. Also make sure to
-        #  discard any category not present in the train data.
 
         self.path_non_temporal_submit = config['prepare_data']['path_tabular_test']
         
