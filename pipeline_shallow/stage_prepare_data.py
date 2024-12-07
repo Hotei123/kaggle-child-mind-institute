@@ -38,6 +38,7 @@ class StepPrepareData:
         data = pd.concat([data[cols_select], data_dummy], axis=1)
         if self.vars_cat_dummy is None:
             self.vars_cat_dummy = data_dummy.columns.tolist()
+        pd.DataFrame({'dummy_names': self.vars_cat_dummy}).to_csv('output/dummy_var_names.csv', index=False)
 
         data_series = np.zeros((data.shape[0], 96))
         path_series = pathlib.Path(path).parent

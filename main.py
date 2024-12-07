@@ -1,18 +1,22 @@
 import yaml
 from pipeline_deep.data_preparation.tfrecord_manager_child_mind import TFRecordManagerChildMind
 from pipeline_deep.stage_train import train
+from pipeline_shallow.stage_prepare_data import StepPrepareData
+from pipeline_shallow.stage_train import StepTrain
 
 
 if __name__ == '__main__':
 
     with open('params.yaml', 'r') as f:
         config = yaml.safe_load(f)
-    print(config)
 
-    train(config)
+    tfrec_man = TFRecordManagerChildMind(config)
+    tfrec_man.write_tfrecords()
 
-    # tfrec_man = TFRecordManagerChildMind(config)
-    # dataset_train_full = tfrec_man.get_tfrecord_dataset('train_*', 6, 100, 8, 1, lambda x, y: True, True)
+    train(config, tfrec_man)
+
+    # step_train = StepTrain(config)
+    # step_train.train()
 
 # TODO: Remove outliers
 # TODO: Use the full time series with tensorflow data.Dataset.from_generator

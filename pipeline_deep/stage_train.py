@@ -8,13 +8,13 @@ from tensorflow.keras import layers, models, Input
 from sklearn.metrics import cohen_kappa_score
 
 
-def get_model(config):
+def get_model(config, shape_input_1, shape_input_2):
 
-    input_tensor_1 = Input(shape=(len(config['prepare_data']['vars_num']),))
+    input_tensor_1 = Input(shape=(shape_input_1,))
     x1 = layers.Dense(64, activation='relu')(input_tensor_1)
     x1 = layers.Dense(32, activation='relu')(x1)
 
-    input_tensor_2 = Input(shape=(3,))
+    input_tensor_2 = Input(shape=(shape_input_2,))
     x2 = layers.Dense(64, activation='relu')(input_tensor_2)
     x2 = layers.Dense(32, activation='relu')(x2)
     x = layers.Concatenate()([x1, x2])
@@ -34,7 +34,7 @@ def hash_element(tensor, num_buckets=100000000):
     return tf.cast(hashed_value, tf.float32)
 
 
-def train(config):
+def train(config, tfrecord_man: TFRecordManagerChildMind):
 
     # Labeling missing data
 
@@ -52,8 +52,9 @@ def train(config):
                                                        True, True)
         dataset_val = tfrec_man.get_tfrecord_dataset('train_*', 6, 100, 8, 1, 
                                                      lambda x, y: fold_count * delta < hash_element(x[0]) and hash_element(x[0]) < (fold_count + 1) * delta, 
-                                                     False, False)        
-        model = get_model(config)
+                                                     False, False)
+
+        model = get_model(config, len(tfrecord_man.vars_num), len(tfrecord_man.vars_dummy))
         model.fit(dataset_train)
 
         y_pred_val = np.argmax(model.predict(dataset_val), axis=1)  
