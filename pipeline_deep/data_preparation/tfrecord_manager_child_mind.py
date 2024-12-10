@@ -97,5 +97,6 @@ class TFRecordManagerChildMind(TFRecordManager):
                 # x_1_min = np.min([x_1_min, x_1], axis=0)
 
         diff_0 = x_0_max - x_0_min
+        diff_0[diff_0 == 0] = 1
         # diff_1 = x_1_max - x_1_min
         return lambda x, y: (((x[0] - x_0_min) / diff_0, x[1]), y)
