@@ -73,8 +73,8 @@ class TFRecordManagerChildMind(TFRecordManager):
         # x2 = tf.stack([example_parsed['Physical-BMI'], 
         #                example_parsed['Physical-Height'],
         #                example_parsed['Physical-Weight']], axis=0)
-        # x1 = tf.where(tf.math.is_nan(x1), 0.0, x1)
-        # x2 = tf.where(tf.math.is_nan(x2), 0.0, x2)
+        x1 = tf.where(tf.math.is_nan(x1), 0.0, x1)
+        x2 = tf.where(tf.math.is_nan(x2), 0.0, x2)
         return (x1, x2), example_parsed['sii']
     
     @staticmethod
