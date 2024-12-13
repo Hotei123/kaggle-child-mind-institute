@@ -8,7 +8,7 @@ from tensorflow.keras import layers, models, Input
 from sklearn.metrics import cohen_kappa_score
 
 
-def get_model(shape_input_1, shape_input_2):
+def get_model(shape_input_1, shape_input_2, shape_input_3):
 
     input_tensor_1 = Input(shape=(shape_input_1,))
     x1 = layers.Dense(64, activation='relu')(input_tensor_1)
@@ -17,10 +17,15 @@ def get_model(shape_input_1, shape_input_2):
     input_tensor_2 = Input(shape=(shape_input_2,))
     x2 = layers.Dense(64, activation='relu')(input_tensor_2)
     x2 = layers.Dense(32, activation='relu')(x2)
-    x = layers.Concatenate()([x1, x2])
+
+    input_tensor_3 = Input(shape=(shape_input_3,))
+    x3 = layers.Dense(128, activation='relu')(input_tensor_3)
+    x3 = layers.Dense(64, activation='relu')(x3)
+
+    x = layers.Concatenate()([x1, x2, x3])
 
     output_tensor = layers.Dense(4, activation='softmax')(x)
-    model = models.Model(inputs=[input_tensor_1, input_tensor_2], outputs=output_tensor)
+    model = models.Model(inputs=[input_tensor_1, input_tensor_2, input_tensor_3], outputs=output_tensor)
     model.compile(optimizer='adam', 
                   loss='sparse_categorical_crossentropy', 
                   metrics=['accuracy'])
@@ -54,7 +59,7 @@ def train(config, tfrecord_man: TFRecordManagerChildMind):
                                                      lambda x, y: fold_count * delta < hash_element(x[0]) and hash_element(x[0]) < (fold_count + 1) * delta, 
                                                      False, False)
 
-        model = get_model(len(tfrecord_man.vars_num), len(tfrecord_man.vars_dummy))
+        model = get_model(len(tfrecord_man.vars_num), len(tfrecord_man.vars_dummy), len(tfrecord_man.vars_time_desc))
         model.fit(dataset_train)
 
         y_pred_val = np.argmax(model.predict(dataset_val), axis=1)  
@@ -70,7 +75,7 @@ def train(config, tfrecord_man: TFRecordManagerChildMind):
     dataset_train_full = tfrec_man.get_tfrecord_dataset('train_*', 6, 100, 8, 1, lambda x, y: True, True, True)
     dataset_submission = tfrec_man.get_tfrecord_dataset('submit_*', 6, 100, 8, 1, lambda x, y: True, False, False)
 
-    model = get_model(len(tfrecord_man.vars_num), len(tfrecord_man.vars_dummy))
+    model = get_model(len(tfrecord_man.vars_num), len(tfrecord_man.vars_dummy), len(tfrecord_man.vars_time_desc))
     model.fit(dataset_train_full)
     y_pred_full = np.argmax(model.predict(dataset_submission), axis=1)
 
