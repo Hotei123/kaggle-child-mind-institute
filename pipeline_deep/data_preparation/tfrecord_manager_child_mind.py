@@ -65,16 +65,10 @@ class TFRecordManagerChildMind(TFRecordManager):
     def parse_example(self, example: tf.train.Example):
         # Returns the parsed data from the input `tf.train.Example` proto.
         # TODO: normalize training
-        # TODO: add dummy variables
         # TODO: add time series data (first from describe.(), and then the whole series)
         example_parsed = tf.io.parse_single_example(example, self.feature_description)
         x1 = tf.stack([example_parsed[var] for var in self.vars_num], axis=0)
         x2 = tf.stack([example_parsed[var] for var in self.vars_dummy], axis=0)
-        # x2 = tf.stack([example_parsed['Physical-BMI'], 
-        #                example_parsed['Physical-Height'],
-        #                example_parsed['Physical-Weight']], axis=0)
-        x1 = tf.where(tf.math.is_nan(x1), 0.0, x1)
-        x2 = tf.where(tf.math.is_nan(x2), 0.0, x2)
         return (x1, x2), example_parsed['sii']
     
     @staticmethod

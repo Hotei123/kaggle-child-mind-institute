@@ -8,7 +8,7 @@ from tensorflow.keras import layers, models, Input
 from sklearn.metrics import cohen_kappa_score
 
 
-def get_model(config, shape_input_1, shape_input_2):
+def get_model(shape_input_1, shape_input_2):
 
     input_tensor_1 = Input(shape=(shape_input_1,))
     x1 = layers.Dense(64, activation='relu')(input_tensor_1)
@@ -54,7 +54,7 @@ def train(config, tfrecord_man: TFRecordManagerChildMind):
                                                      lambda x, y: fold_count * delta < hash_element(x[0]) and hash_element(x[0]) < (fold_count + 1) * delta, 
                                                      False, False)
 
-        model = get_model(config, len(tfrecord_man.vars_num), len(tfrecord_man.vars_dummy))
+        model = get_model(len(tfrecord_man.vars_num), len(tfrecord_man.vars_dummy))
         model.fit(dataset_train)
 
         y_pred_val = np.argmax(model.predict(dataset_val), axis=1)  
@@ -70,7 +70,7 @@ def train(config, tfrecord_man: TFRecordManagerChildMind):
     dataset_train_full = tfrec_man.get_tfrecord_dataset('train_*', 6, 100, 8, 1, lambda x, y: True, True, True)
     dataset_submission = tfrec_man.get_tfrecord_dataset('submit_*', 6, 100, 8, 1, lambda x, y: True, False, False)
 
-    model = get_model(config, len(tfrecord_man.vars_num), len(tfrecord_man.vars_dummy))
+    model = get_model(len(tfrecord_man.vars_num), len(tfrecord_man.vars_dummy))
     model.fit(dataset_train_full)
     y_pred_full = np.argmax(model.predict(dataset_submission), axis=1)
 
