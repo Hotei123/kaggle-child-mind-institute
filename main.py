@@ -11,8 +11,6 @@ if __name__ == '__main__':
         config = yaml.safe_load(f)
 
     tfrec_man = TFRecordManagerChildMind(config)
-    tfrec_man.write_tfrecords()
-
     train(config, tfrec_man)
 
     # step_train = StepTrain(config)
