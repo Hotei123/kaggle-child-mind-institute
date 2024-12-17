@@ -43,7 +43,8 @@ class TFRecordManagerChildMind(TFRecordManager):
         
         self.feature_description = {var_name: tf.io.FixedLenFeature([], tf.float32) for var_name in self.vars_num_cat_time_desc}
         self.feature_description['sii'] = tf.io.FixedLenFeature([], tf.float32)
-
+        self.path_series_train = config['prepare_data']['path_series_train']
+        self.path_series_test = config['prepare_data']['path_series_test']
 
     def get_example(self, index: int, prefix: str) -> tf.train.Example:
         # This function returns an example from the raw data.
@@ -56,6 +57,12 @@ class TFRecordManagerChildMind(TFRecordManager):
         # TODO: normalize data previous to writing the TFRecords
         feature = {var_name: self._float_feature(example[var_name]) if not np.isnan(example[var_name]) else self._float_feature(0) 
                    for var_name in self.vars_num_cat_time_desc}
+        if prefix == 'train':
+            path_series = pathlib.Path(self.path_series_train).joinpath(f'id={index}/part-0.parquet')
+        else:
+            path_series = pathlib.Path(self.path_series_test).joinpath(f'id={index}/part-0.parquet')
+        if path_series.exists():
+            data_series_row = pd.read_parquet(path_series)
         if 'sii' in example:
             if np.isnan(example['sii']):
                 feature['sii'] = self._float_feature(0)
