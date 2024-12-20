@@ -29,6 +29,11 @@ class TFRecordManager:
     def _float_feature(value):
         """Returns a float_list from a float / double."""
         return tf.train.Feature(float_list=tf.train.FloatList(value=[value]))
+    
+    @staticmethod
+    def _float_feature_list(values):
+        """Returns a float_list from a float / double."""
+        return tf.train.Feature(float_list=tf.train.FloatList(value=values))
         
     def get_example(self, index: int, prefix: str) -> tf.train.Example:
         """This function returns an example from the raw data. """

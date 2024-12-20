@@ -12,12 +12,14 @@ class TFRecordManagerChildMind(TFRecordManager):
         
         # Train data
         self.data_non_temp_train = pd.read_csv('output/train_processed.csv')
+        self.ids_train = pd.read_csv(config['prepare_data']['path_tabular_train'])['id']
         # Filling NaN labels
         path_labels_train_filled = pathlib.Path(config['prepare_data']['path_output']).joinpath('labels_filled.csv')
         labels_train_filled: pd.DataFrame = pd.read_csv(path_labels_train_filled)
         self.data_non_temp_train.sii = labels_train_filled.sii
         # Submit data
         self.data_non_temp_submit = pd.read_csv('output/test_processed.csv')
+        self.ids_submit = pd.read_csv(config['prepare_data']['path_tabular_test'])['id']
         for col in self.data_non_temp_train.columns:
             if col not in self.data_non_temp_submit.columns:
                 self.data_non_temp_submit[col] = 0
@@ -32,6 +34,8 @@ class TFRecordManagerChildMind(TFRecordManager):
         self.n_examples_per_file_train: int = config['prepare_data']['n_examples_per_file_train']
         self.n_examples_submit: int = self.data_non_temp_submit.shape[0]
         self.n_examples_per_file_submit: int = config['prepare_data']['n_examples_per_file_submit']
+        self.n_cols_ts: int = config['prepare_data']['n_cols_ts']
+        self.n_rows_ts: int = config['prepare_data']['n_rows_ts']
 
         self.path_output: str = pathlib.Path(config['prepare_data']['path_output']).joinpath('tfrecords')
         self.vars_dummy = pd.read_csv('output/dummy_var_names.csv').dummy_names.to_list()
@@ -42,6 +46,7 @@ class TFRecordManagerChildMind(TFRecordManager):
         self.vars_num_cat_time_desc = config['prepare_data']['vars_num'] + self.vars_dummy + self.vars_time_desc
         
         self.feature_description = {var_name: tf.io.FixedLenFeature([], tf.float32) for var_name in self.vars_num_cat_time_desc}
+        self.feature_description['ts'] = tf.io.FixedLenFeature([self.n_rows_ts * self.n_cols_ts], tf.float32)
         self.feature_description['sii'] = tf.io.FixedLenFeature([], tf.float32)
         self.path_series_train = config['prepare_data']['path_series_train']
         self.path_series_test = config['prepare_data']['path_series_test']
@@ -58,11 +63,20 @@ class TFRecordManagerChildMind(TFRecordManager):
         feature = {var_name: self._float_feature(example[var_name]) if not np.isnan(example[var_name]) else self._float_feature(0) 
                    for var_name in self.vars_num_cat_time_desc}
         if prefix == 'train':
-            path_series = pathlib.Path(self.path_series_train).joinpath(f'id={index}/part-0.parquet')
+            path_series = pathlib.Path(self.path_series_train).joinpath(f'id={self.ids_train.iloc[index]}/part-0.parquet')
         else:
-            path_series = pathlib.Path(self.path_series_test).joinpath(f'id={index}/part-0.parquet')
+            path_series = pathlib.Path(self.path_series_test).joinpath(f'id={self.ids_submit.iloc[index]}/part-0.parquet')
         if path_series.exists():
             data_series_row = pd.read_parquet(path_series)
+            data_series_row.drop(columns='step', inplace=True)
+            if data_series_row.shape[0] < self.n_rows_ts:
+                pad_zeros = pd.DataFrame(np.zeros((self.n_rows_ts - data_series_row.shape[0], self.n_cols_ts)), 
+                                         columns=data_series_row.columns)
+                data_series_row = pd.concat([data_series_row, pad_zeros])
+            # feature['ts'] = self._float_feature_list(data_series_row.values.flatten())
+            feature['ts'] = self._float_feature_list(np.zeros(self.n_rows_ts * self.n_cols_ts))
+        else:
+            feature['ts'] = self._float_feature_list(np.zeros(self.n_rows_ts * self.n_cols_ts))
         if 'sii' in example:
             if np.isnan(example['sii']):
                 feature['sii'] = self._float_feature(0)
@@ -80,7 +94,10 @@ class TFRecordManagerChildMind(TFRecordManager):
         x_0 = tf.stack([example_parsed[var] for var in self.vars_num], axis=0)
         x_1 = tf.stack([example_parsed[var] for var in self.vars_dummy], axis=0)
         x_2 = tf.stack([example_parsed[var] for var in self.vars_time_desc], axis=0)
-        return (x_0, x_1, x_2), example_parsed['sii']
+        # print(f'\n\n\nType: {type(example_parsed["ts"])}. Shape: {example_parsed["ts"].shape}. {"ts" in example_parsed}\n\n\n')
+        x_3 = tf.reshape(example_parsed['ts'], (self.n_rows_ts, self.n_cols_ts))
+        return (x_0, x_1, x_2, x_3), example_parsed['sii']
+        # return (x_0, x_1, x_2), example_parsed['sii']
     
     @staticmethod
     def normalization_function(dataset):
@@ -90,7 +107,7 @@ class TFRecordManagerChildMind(TFRecordManager):
         x_0_min = None
         x_2_min = None
 
-        for (x_0, x_1, x_2), y in dataset:
+        for (x_0, x_1, x_2, x_3), y in dataset:
             if x_0_max is None:
                 x_0_max = x_0
                 x_2_max = x_2
@@ -106,4 +123,4 @@ class TFRecordManagerChildMind(TFRecordManager):
         diff_0[diff_0 == 0] = 1
         diff_2 = x_2_max - x_2_min
         diff_2[diff_2 == 0] = 1
-        return lambda x, y: (((x[0] - x_0_min) / diff_0, x[1], (x[2] - x_2_min) / diff_2), y)
+        return lambda x, y: (((x[0] - x_0_min) / diff_0, x[1], (x[2] - x_2_min) / diff_2, x[3]), y)

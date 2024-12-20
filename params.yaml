@@ -6,6 +6,8 @@ prepare_data:
   path_output: output/
   n_examples_per_file_train: 10
   n_examples_per_file_submit: 10
+  n_cols_ts: 12
+  n_rows_ts: 10
   # Kaggle paths: 
   # path_tabular_train: /kaggle/input/child-mind-institute-problematic-internet-use/train.csv
   # path_tabular_test: /kaggle/input/child-mind-institute-problematic-internet-use/test.csv
