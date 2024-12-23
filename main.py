@@ -17,7 +17,7 @@ if __name__ == '__main__':
     # step_train.train()
 
     tfrec_man = TFRecordManagerChildMind(config)
-    tfrec_man.write_tfrecords()
+    # tfrec_man.write_tfrecords()
     train(config, tfrec_man)
 
     # example = tfrec_man.get_example(0, 'train')

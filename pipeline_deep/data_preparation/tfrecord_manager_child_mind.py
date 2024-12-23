@@ -101,8 +101,10 @@ class TFRecordManagerChildMind(TFRecordManager):
         return (x_0, x_1, x_2, x_3), example_parsed['sii']
         # return (x_0, x_1, x_2), example_parsed['sii']
     
-    @staticmethod
-    def normalization_function(dataset):
+    def calculate_norm_params(self, dataset):
+        pass
+
+    def normalization_function(self, dataset):
         # TODO: normalize only training, and use parameters in validation or test. Since the shallow data
         #  was already normalized, only the temporal data needs to be normalized.
 

@@ -118,6 +118,8 @@ class TFRecordManager:
 
         return parsed_dataset
     
-    @staticmethod
-    def normalization_function(dataset):
+    def calculate_norm_params(self, dataset):
+        pass
+
+    def normalization_function(self, dataset):
         pass
