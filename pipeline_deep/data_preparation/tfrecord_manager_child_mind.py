@@ -69,12 +69,14 @@ class TFRecordManagerChildMind(TFRecordManager):
         if path_series.exists():
             data_series_row = pd.read_parquet(path_series)
             data_series_row.drop(columns='step', inplace=True)
+            data_series_row = data_series_row.iloc[:self.n_rows_ts, :]
             if data_series_row.shape[0] < self.n_rows_ts:
                 pad_zeros = pd.DataFrame(np.zeros((self.n_rows_ts - data_series_row.shape[0], self.n_cols_ts)), 
                                          columns=data_series_row.columns)
                 data_series_row = pd.concat([data_series_row, pad_zeros])
-            # feature['ts'] = self._float_feature_list(data_series_row.values.flatten())
-            feature['ts'] = self._float_feature_list(np.zeros(self.n_rows_ts * self.n_cols_ts))
+                data_series_row.fillna(0, inplace=True)
+            feature['ts'] = self._float_feature_list(data_series_row.values.flatten())
+            # feature['ts'] = self._float_feature_list(np.zeros(self.n_rows_ts * self.n_cols_ts))
         else:
             feature['ts'] = self._float_feature_list(np.zeros(self.n_rows_ts * self.n_cols_ts))
         if 'sii' in example:
@@ -101,6 +103,8 @@ class TFRecordManagerChildMind(TFRecordManager):
     
     @staticmethod
     def normalization_function(dataset):
+        # TODO: normalize only training, and use parameters in validation or test. Since the shallow data
+        #  was already normalized, only the temporal data needs to be normalized.
 
         x_0_max = None
         x_2_max = None
