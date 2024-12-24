@@ -102,31 +102,38 @@ class TFRecordManagerChildMind(TFRecordManager):
         # return (x_0, x_1, x_2), example_parsed['sii']
     
     def calculate_norm_params(self, dataset):
-        pass
+        self.x_0_max = None
+        self.x_2_max = None
+        self.x_0_min = None
+        self.x_2_min = None
+
+        for (x_0, x_1, x_2, x_3), y in dataset:
+            if self.x_0_max is None:
+                self.x_0_max = x_0
+                self.x_2_max = x_2
+                self.x_3_max = np.expand_dims(np.max(x_3, axis=0), axis=0)
+                self.x_0_min = x_0
+                self.x_2_min = x_2
+                self.x_3_min = np.expand_dims(np.min(x_3, axis=0), axis=0)
+            else:
+                self.x_0_max = np.max([self.x_0_max, x_0], axis=0)
+                self.x_2_max = np.max([self.x_2_max, x_2], axis=0)
+                self.x_3_max = np.max([self.x_3_max, np.expand_dims(np.max(x_3, axis=0), axis=0)], axis=0)
+                self.x_0_min = np.min([self.x_0_min, x_0], axis=0)
+                self.x_2_min = np.min([self.x_2_min, x_2], axis=0)
+                self.x_3_min = np.min([self.x_3_min, np.expand_dims(np.min(x_3, axis=0), axis=0)], axis=0)
+
+        self.diff_0 = self.x_0_max - self.x_0_min
+        self.diff_0[self.diff_0 == 0] = 1
+        self.diff_2 = self.x_2_max - self.x_2_min
+        self.diff_2[self.diff_2 == 0] = 1
+        self.diff_3 = self.x_3_max - self.x_3_min
+        self.diff_3[self.diff_3 == 0] = 1
 
     def normalization_function(self, dataset):
         # TODO: normalize only training, and use parameters in validation or test. Since the shallow data
         #  was already normalized, only the temporal data needs to be normalized.
-
-        x_0_max = None
-        x_2_max = None
-        x_0_min = None
-        x_2_min = None
-
-        for (x_0, x_1, x_2, x_3), y in dataset:
-            if x_0_max is None:
-                x_0_max = x_0
-                x_2_max = x_2
-                x_0_min = x_0
-                x_2_min = x_2
-            else:
-                x_0_max = np.max([x_0_max, x_0], axis=0)
-                x_2_max = np.max([x_2_max, x_2], axis=0)
-                x_0_min = np.min([x_0_min, x_0], axis=0)
-                x_2_min = np.min([x_2_min, x_2], axis=0)
-
-        diff_0 = x_0_max - x_0_min
-        diff_0[diff_0 == 0] = 1
-        diff_2 = x_2_max - x_2_min
-        diff_2[diff_2 == 0] = 1
-        return lambda x, y: (((x[0] - x_0_min) / diff_0, x[1], (x[2] - x_2_min) / diff_2, x[3]), y)
+        return lambda x, y: (((x[0] - self.x_0_min) / self.diff_0, 
+                              x[1], 
+                              (x[2] - self.x_2_min) / self.diff_2, 
+                              (x[3] - self.x_3_min) / self.diff_3), y)

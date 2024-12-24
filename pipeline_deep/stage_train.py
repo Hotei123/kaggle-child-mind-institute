@@ -1,4 +1,5 @@
 import pathlib
+import shutil
 import numpy as np
 import pandas as pd
 import tensorflow as tf
@@ -67,7 +68,11 @@ def train(config, tfrecord_man: TFRecordManagerChildMind):
                           len(tfrecord_man.vars_dummy), 
                           len(tfrecord_man.vars_time_desc), 
                           (tfrec_man.n_rows_ts, tfrec_man.n_cols_ts))
-        model.fit(dataset_train)
+        path_tb = f'output/tb_logs_{fold_count}'
+        if pathlib.Path(path_tb).exists():
+            shutil.rmtree(path_tb, ignore_errors=True)
+        callbacks = [tf.keras.callbacks.TensorBoard(log_dir=path_tb)]
+        model.fit(dataset_train, validation_data=dataset_val, epochs=10, callbacks=callbacks)
 
         y_pred_val = np.argmax(model.predict(dataset_val), axis=1)  
         y_val = np.empty((0,))
@@ -86,7 +91,11 @@ def train(config, tfrecord_man: TFRecordManagerChildMind):
                       len(tfrecord_man.vars_dummy), 
                       len(tfrecord_man.vars_time_desc), 
                       (tfrec_man.n_rows_ts, tfrec_man.n_cols_ts))
-    model.fit(dataset_train_full)
+    path_tb = f'output/tb_logs_full'
+    if pathlib.Path(path_tb).exists():
+        shutil.rmtree(path_tb, ignore_errors=True)
+    callbacks = [tf.keras.callbacks.TensorBoard(log_dir=path_tb)]
+    model.fit(dataset_train_full, epochs=10, callbacks=callbacks)
     y_pred_full = np.argmax(model.predict(dataset_submission), axis=1)
 
     data_test_raw = pd.read_csv(tfrec_man.path_non_temporal_submit)
