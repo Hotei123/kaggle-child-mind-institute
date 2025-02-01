@@ -1,5 +1,6 @@
 import pathlib
 import shutil
+from typing import Any, List
 import numpy as np
 import pandas as pd
 import tensorflow as tf
@@ -7,6 +8,7 @@ import yaml
 from pipeline_deep.data_preparation.tfrecord_manager_child_mind import TFRecordManagerChildMind
 from tensorflow.keras import layers, models, Input
 from sklearn.metrics import cohen_kappa_score
+from tensorflow.keras.callbacks import EarlyStopping
 
 
 def get_model(shape_input_1, shape_input_2, shape_input_3, shape_input_4):
@@ -44,10 +46,16 @@ def hash_element(tensor, num_buckets=100000000):
     hashed_value = tf.strings.to_hash_bucket_fast(combined_string, num_buckets=num_buckets) / num_buckets
     return tf.cast(hashed_value, tf.float32)
 
-
+def get_callbacks(path_tb: str, early_stopping_monitor: str) -> List[Any]:
+    if pathlib.Path(path_tb).exists():
+        shutil.rmtree(path_tb, ignore_errors=True)
+    early_stopping = EarlyStopping(monitor=early_stopping_monitor, patience=10, restore_best_weights=True)
+    return [tf.keras.callbacks.TensorBoard(log_dir=path_tb), early_stopping]
+    
 def train(config, tfrecord_man: TFRecordManagerChildMind):
 
-    # Labeling missing data
+    batch_size = config['train']['batch_size']
+    n_epochs = config['train']['n_epochs']
 
     # Cross-validation
     n_folds = 10
@@ -68,11 +76,9 @@ def train(config, tfrecord_man: TFRecordManagerChildMind):
                           len(tfrecord_man.vars_dummy), 
                           len(tfrecord_man.vars_time_desc), 
                           (tfrec_man.n_rows_ts, tfrec_man.n_cols_ts))
-        path_tb = f'output/tb_logs_{fold_count}'
-        if pathlib.Path(path_tb).exists():
-            shutil.rmtree(path_tb, ignore_errors=True)
-        callbacks = [tf.keras.callbacks.TensorBoard(log_dir=path_tb)]
-        model.fit(dataset_train, validation_data=dataset_val, epochs=10, callbacks=callbacks)
+        callbacks = get_callbacks(f'output/tb_logs_{fold_count}', 'val_accuracy')
+        model.fit(dataset_train, validation_data=dataset_val, 
+                  epochs=n_epochs, batch_size=batch_size, callbacks=callbacks)
 
         y_pred_val = np.argmax(model.predict(dataset_val), axis=1)  
         y_val = np.empty((0,))
@@ -91,11 +97,8 @@ def train(config, tfrecord_man: TFRecordManagerChildMind):
                       len(tfrecord_man.vars_dummy), 
                       len(tfrecord_man.vars_time_desc), 
                       (tfrec_man.n_rows_ts, tfrec_man.n_cols_ts))
-    path_tb = f'output/tb_logs_full'
-    if pathlib.Path(path_tb).exists():
-        shutil.rmtree(path_tb, ignore_errors=True)
-    callbacks = [tf.keras.callbacks.TensorBoard(log_dir=path_tb)]
-    model.fit(dataset_train_full, epochs=10, callbacks=callbacks)
+    callbacks = get_callbacks('output/tb_logs_full', 'accuracy')
+    model.fit(dataset_train_full, epochs=n_epochs, batch_size=batch_size, callbacks=callbacks)
     y_pred_full = np.argmax(model.predict(dataset_submission), axis=1)
 
     data_test_raw = pd.read_csv(tfrec_man.path_non_temporal_submit)
@@ -105,7 +108,8 @@ def train(config, tfrecord_man: TFRecordManagerChildMind):
 
 if __name__ == '__main__':
 
-    # TODO: normalize data
+    # TODO: run in Kaggle
+    # TODO: use more rows of time series
     # TODO: add time series data
     # TODO: revise dataset parameters
 

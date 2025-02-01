@@ -57,8 +57,6 @@ class TFRecordManagerChildMind(TFRecordManager):
             example = self.data_non_temp_train.iloc[index].to_dict()
         elif prefix == 'submit':
             example = self.data_non_temp_submit.iloc[index].to_dict()
-        # TODO: use all the tabular and time series variables for writing the TFRecords
-        # TODO: write categorical variables
         # TODO: normalize data previous to writing the TFRecords
         feature = {var_name: self._float_feature(example[var_name]) if not np.isnan(example[var_name]) else self._float_feature(0) 
                    for var_name in self.vars_num_cat_time_desc}
@@ -99,7 +97,6 @@ class TFRecordManagerChildMind(TFRecordManager):
         # print(f'\n\n\nType: {type(example_parsed["ts"])}. Shape: {example_parsed["ts"].shape}. {"ts" in example_parsed}\n\n\n')
         x_3 = tf.reshape(example_parsed['ts'], (self.n_rows_ts, self.n_cols_ts))
         return (x_0, x_1, x_2, x_3), example_parsed['sii']
-        # return (x_0, x_1, x_2), example_parsed['sii']
     
     def calculate_norm_params(self, dataset):
         self.x_0_max = None

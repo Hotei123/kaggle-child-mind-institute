@@ -70,7 +70,10 @@ Mean metric:  0.267.
 - After using pd.describe() vars: [0.156, 0.038, 0.245, 0.421, 0.297, 0.289, 0.281, 0.141, 0.366, 0.283].
 Mean metric:  0.252
 
-- After using normalization in series of size 10, and more epochs: [0.205, 0.269, 0.27, 0.376, 0.432, 0.444, 0.285, 0.353, 0.335, 0.44]. Mean metric:  0.341.
+- After using normalization in series of size 10, and more epochs: [0.205, 0.269, 0.27, 0.376, 0.432, 0.444, 0.285, 0.353, 0.335, 0.44]. Mean metric: 0.341.
+
+- Series of size 10, and 100 epochs: [0.287, 0.267, 0.353, 0.304, 0.458, 0.424, 0.349, 0.374, 0.362, 0.349].
+Mean metric: 0.353.
 
 ### Some comments on normalization
 
